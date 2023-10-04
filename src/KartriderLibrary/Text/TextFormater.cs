@@ -43,7 +43,7 @@ namespace KartRider.Text
                         }
                         else
                         {
-                        TopLine.Add($"{"".PadLeft(LevelDelta*tf.Level,' ')}{tf.Text}");
+                        TopLine.Add($"{"".PadLeft(LevelDelta * tf.Level,' ')}{tf.Text}");
                         }
                         break;
                     case TextAlign.Bottom:
