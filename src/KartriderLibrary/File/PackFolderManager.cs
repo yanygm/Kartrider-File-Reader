@@ -72,8 +72,8 @@ namespace KartRider.File
                         string subname = currentTag.GetAttribute("name");
                         PackFolderInfo newSubFolder = new PackFolderInfo()
                         {
-                            FolderName = currectProcObj.Parent is null ? $"{subname}_" : subname,
-                            FullName = currectProcObj.Parent is null ? $"{subname}_" : $"{currectProcObj.Path}/{subname}",
+                            FolderName = currectProcObj.Parent is null ? $"{subname}" : subname,
+                            FullName = currectProcObj.Parent is null ? $"{subname}" : $"{currectProcObj.Path}/{subname}",
                             ParentFolder = currectProcObj.Parent
                         };
                         foreach (BinaryXmlTag subTag in currentTag.SubTags)
@@ -96,8 +96,8 @@ namespace KartRider.File
                         string fileName = currentTag.GetAttribute("fileName");
                         PackFolderInfo NewFolder = new PackFolderInfo()
                         {
-                            FolderName = currectProcObj.Parent is null ? $"{name}_" : name,
-                            FullName = currectProcObj.Parent is null ? $"{name}_" : $"{currectProcObj.Path}/{name}",
+                            FolderName = currectProcObj.Parent is null ? $"{name}" : name,
+                            FullName = currectProcObj.Parent is null ? $"{name}" : $"{currectProcObj.Path}/{name}",
                             ParentFolder = currectProcObj.Parent
                         };
                         if (name == "")
@@ -146,7 +146,7 @@ namespace KartRider.File
             }
             RegionCode regionCode = RegionCode.None;
             
-            PackFolderInfo[] ZETA_Folders = GetDirectories("zeta_");
+            PackFolderInfo[] ZETA_Folders = GetDirectories("zeta");
             if (Array.Exists(ZETA_Folders, x => x.FolderName == "kr"))
                 regionCode = RegionCode.Korea;
             else if (Array.Exists(ZETA_Folders, x => x.FolderName == "cn"))
