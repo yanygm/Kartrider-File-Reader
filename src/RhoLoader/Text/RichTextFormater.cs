@@ -38,14 +38,7 @@ namespace KartRider.Text
                 switch (tf.Align)
                 {
                     case TextAlign.Top:
-                        if ($"{"".PadLeft(LevelDelta * tf.Level, ' ')}" == "    ")
-                        {
-                            TopLine.Add($"{"\t"}{tf.Text}");
-                        }
-                        else
-                        {
                         TopLine.Add($"{"".PadLeft(LevelDelta * tf.Level, ' ')}{tf.Text}");
-                        }
                         break;
                     case TextAlign.Bottom:
                         BottomLine.Add($"{"".PadLeft(LevelDelta * tf.Level, ' ')}{tf.Text}");
