@@ -109,7 +109,7 @@ namespace KartRider.Xml
                 List<string> attFormat = new List<string>();
                 foreach(KeyValuePair<string,string> KeyPair in Attributes)
                 {
-                    attFormat.Add($"{KeyPair.Key}=/"{KeyPair.Value}/"");
+                    attFormat.Add($"{KeyPair.Key}=\"{KeyPair.Value}\"");
                 }
                 Att =$" {String.Join(" ",attFormat)}";
             }
