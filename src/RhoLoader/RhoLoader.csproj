@@ -9,6 +9,7 @@
     <Version>23.1.31.0</Version>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <SignAssembly>False</SignAssembly>
+    <PublishSingleFile>true</PublishSingleFile>
     <StartupObject>RhoLoader.Program</StartupObject>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
