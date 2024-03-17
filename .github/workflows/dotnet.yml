@@ -23,6 +23,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: KartriderLibrary
-      run: dotnet publish -c Release -p /home/runner/work/Kartrider-File-Reader/Kartrider-File-Reader/src/KartriderLibrary/KartriderLibrary.csproj
+      run: dotnet build -c Release -p /home/runner/work/Kartrider-File-Reader/Kartrider-File-Reader/src/KartriderLibrary/KartriderLibrary.csproj
     - name: RhoLoader
-      run: dotnet publish -c Release -p /home/runner/work/Kartrider-File-Reader/Kartrider-File-Reader/src/RhoLoader/RhoLoader.csproj
+      run: dotnet build -c Release -p /home/runner/work/Kartrider-File-Reader/Kartrider-File-Reader/src/RhoLoader/RhoLoader.csproj
