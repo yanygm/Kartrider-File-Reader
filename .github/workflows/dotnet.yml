@@ -22,7 +22,5 @@ jobs:
         dotnet-version: 8.0.x
     - name: Restore dependencies
       run: dotnet restore
-    - name: KartriderLibrary
-      run: dotnet build --no-restore
     - name: RhoLoader
-      run: dotnet publish -c Release -o out
+      run: dotnet build --no-restore
