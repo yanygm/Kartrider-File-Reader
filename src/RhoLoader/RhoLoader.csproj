@@ -2,13 +2,12 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>disable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <Version>23.1.31.0</Version>
     <SignAssembly>False</SignAssembly>
-    <AssemblyOriginatorKeyFile>C:\Users\xpoi5\Downloads\epstudio_cc\epstudio_cc.crt</AssemblyOriginatorKeyFile>
     <StartupObject>RhoLoader.Program</StartupObject>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
