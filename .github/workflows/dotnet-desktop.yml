@@ -70,4 +70,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: RhoLoader
-        path: D:\a\Kartrider-File-Reader\Kartrider-File-Reader\*
+        path: D:\a\Kartrider-File-Reader\Kartrider-File-Reader\publish_pool\RhoLoader\x64\*
