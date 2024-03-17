@@ -61,4 +61,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: RhoLoader
-        path: ${{ env.Wap_Project_Directory }}\AppPackages
+        path: D:\a\Kartrider-File-Reader\Kartrider-File-Reader\out_pool\*
