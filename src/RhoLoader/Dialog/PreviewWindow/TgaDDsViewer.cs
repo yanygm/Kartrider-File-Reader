@@ -39,7 +39,7 @@ namespace RhoLoader.PreviewWindow
             this.Show();
             using(MemoryStream ms = new MemoryStream(Data))
             {
-                IImage image = Pfim.Pfim.FromStream(ms);
+                IImage image = Pfimage.FromStream(ms);
                 handle = GCHandle.Alloc(image.Data, GCHandleType.Pinned);
                 var d = Marshal.UnsafeAddrOfPinnedArrayElement(image.Data, 0);
                 PixelFormat pf;
@@ -109,7 +109,7 @@ namespace RhoLoader.PreviewWindow
         {
             using (MemoryStream ms = new MemoryStream(Data))
             {
-                IImage image = Pfim.Pfim.FromStream(ms);
+                IImage image = Pfimage.FromStream(ms);
                 handle = GCHandle.Alloc(image.Data, GCHandleType.Pinned);
                 var d = Marshal.UnsafeAddrOfPinnedArrayElement(image.Data, 0);
                 PixelFormat pf;

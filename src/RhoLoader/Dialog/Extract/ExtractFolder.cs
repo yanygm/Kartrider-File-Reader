@@ -33,7 +33,7 @@ namespace RhoLoader
             public static byte[] DDSConverter(byte[] inputData)
             {
                 var stream = new MemoryStream(inputData);
-                IImage image = Pfim.Pfim.FromStream(stream);
+                IImage image = Pfimage.FromStream(stream);
                 var handle = GCHandle.Alloc(image.Data, GCHandleType.Pinned);
                 var d = Marshal.UnsafeAddrOfPinnedArrayElement(image.Data, 0);
                 PixelFormat pf;
