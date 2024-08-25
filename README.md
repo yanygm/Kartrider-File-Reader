@@ -47,4 +47,3 @@ Rho Reader 可以開啟跑跑卡丁車的遊戲檔案。
 * 修正一些錯誤
 * 改善UI設計
 * 改善KartRider File Library的資料結構。
-
