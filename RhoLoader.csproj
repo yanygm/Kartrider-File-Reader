@@ -27,26 +27,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Controls\DarkTreeView\Icons\collapsed.png" />
-    <None Remove="Controls\DarkTreeView\Icons\collapsed_white.png" />
-    <None Remove="Controls\DarkTreeView\Icons\expanded.png" />
-    <None Remove="Controls\DarkTreeView\Icons\expanded_white.png" />
-    <None Remove="Controls\DarkTreeView\Icons\file_image.png" />
-    <None Remove="Controls\DarkTreeView\Icons\file_ksv.png" />
-    <None Remove="Controls\DarkTreeView\Icons\file_music.png" />
-    <None Remove="Controls\DarkTreeView\Icons\file_xml.png" />
-    <None Remove="Controls\DarkTreeView\Icons\folder_close.png" />
-    <None Remove="Controls\DarkTreeView\Icons\folder_open.png" />
-    <None Remove="Controls\DarkTreeView\Icons\object_unknown.png" />
-    <None Remove="Controls\DarkTreeView\Icons\relement_base.png" />
-    <None Remove="Controls\DarkTreeView\Icons\relement_recamera.png" />
-    <None Remove="Resources\baseline_arrow_left_black_18dp.png" />
-    <None Remove="Resources\baseline_folder_black_18dp.png" />
-    <None Remove="Resources\baseline_insert_drive_file_black_18dp.png" />
-    <None Remove="Resources\ic_fluent_arrow_hook_up_left_24_filled.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Pfim" Version="0.11.2" />
     <PackageReference Include="Ionic.Zlib.Core" Version="1.0.0" />
