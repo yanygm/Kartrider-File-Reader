@@ -675,7 +675,6 @@ namespace KartRider.Encrypt
 
                 }
             }
-            return new Vector128<double>();
         }
 
         private unsafe static Vector128<double> LoadVector128LH(double* address)

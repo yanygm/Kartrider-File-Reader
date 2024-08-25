@@ -28,16 +28,13 @@ namespace KartRider.Encrypt
 
         private int bufferCount = 64;
 
-        private int bufPos = 64;
-
-        private bool Inited = false;
+        private int bufPos;
 
         public Rho5DecryptStream(Stream BaseStream, byte[] Key)
         {
             this.BaseStream = BaseStream;
             KeyProvider = new Rho5KeyProvider();
             KeyProvider.InitFromKey(Key);
-            Inited = true;
             bufPos = bufStartPos = 64;
         }
 
@@ -46,7 +43,6 @@ namespace KartRider.Encrypt
             this.BaseStream = BaseStream;
             KeyProvider = new Rho5KeyProvider();
             KeyProvider.InitHeaderKey(fileName,anotherData);
-            Inited = true;
             bufPos = bufStartPos = 64;
         }
 
@@ -54,7 +50,6 @@ namespace KartRider.Encrypt
         {
             this.BaseStream = BaseStream;
             KeyProvider = new Rho5KeyProvider();
-            Inited = false;
         }
 
         public override void Flush()

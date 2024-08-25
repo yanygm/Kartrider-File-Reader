@@ -17,8 +17,6 @@ namespace RhoLoader
 
         //likes en-us zh-tw
 
-        private static string ln = "";
-
         private static Language nowLang = new Language();
         public static Language CurrentLanguage => nowLang;
         public static Language[] ListLanguages()

@@ -13,16 +13,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
-using RhoLoader.Update;
 
 namespace RhoLoader
 {
     public partial class AboutMe : Form
     {
-        private string UpdateFile = "";
-        private string LastVersion = "";
-        private Task bg_work;
-        private UpdateInfo updateInfo;
         private CheckResult Result = CheckResult.Checking;
 
         public AboutMe()
@@ -30,7 +25,6 @@ namespace RhoLoader
             InitializeComponent();
             Version ver = Assembly.GetExecutingAssembly().GetName().Version;
             this.version.Text = $"Version : {(ver.Revision == 0 ? "" : ver.Revision == 1 ? "Beta " : ver.Revision == 2 ? "Dev " : ver.Revision == 3 ? "Unstable " : "Custom ")}{ver.Major}.{ver.Minor}.{ver.Build}";
-            StartCheckUpdate();
         }
 
 
@@ -42,51 +36,6 @@ namespace RhoLoader
         private void button1_Click(object sender, EventArgs e)
         {
             MessageBox.Show("If this program is running incorrectly,\r\nYou can report to RhoReader github page.\r\nThank you for reporting!");
-        }
-
-        private void StartCheckUpdate()
-        {
-            bg_work = new Task(CheckUpdate_BGFunc);
-            bg_work.Start();
-        }
-
-        private void CheckUpdate_BGFunc()
-        {
-            try
-            {
-                ChangeUpdateStatus(CheckResult.Checking);
-                UpdateInfo updateInfo;
-                try
-                {
-                    updateInfo = UpdateManager.GetUpdateInfo();
-                }
-                catch (Exception ex)
-                {
-                    switch (ex)
-                    {
-                        case WebException webException:
-                            ChangeUpdateStatus(CheckResult.NoNetworkConnection);
-                            break;
-                        default:
-                            ChangeUpdateStatus(CheckResult.UnknownError);
-                            break;
-                    }
-                    return;
-                }
-                if (updateInfo.Version != UpdateManager.GetCurrentVersion())
-                {
-                    ChangeUpdateStatus(CheckResult.NewVersionReleased);
-                    UpdateFile = updateInfo.DownloadLink;
-                }
-                else
-                    ChangeUpdateStatus(CheckResult.UpToDate);
-
-            }
-            catch(Exception ex)
-            {
-
-                Debug.Print($"Function:{nameof(CheckUpdate_BGFunc)} throws a excetion: {ex.Message}\nStack: {ex.StackTrace}");
-            }
         }
 
         private void ChangeUpdateStatus(CheckResult status, int _invoke_recursion_counter = 0)
@@ -134,28 +83,6 @@ namespace RhoLoader
                     this.Invoke(dele, status, _invoke_recursion_counter + 1);
                 }
                 
-            }
-        }
-
-        private void checkUpdateStatus_Click(object sender, EventArgs e)
-        {
-            if(Result == CheckResult.NewVersionReleased)
-            {
-                if(MessageBox.Show(string.Format("msg_newVersionReleased".GetStringBag(),LastVersion), "Rho Loader",MessageBoxButtons.YesNo,MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    if (updateInfo is null)
-                    {
-                        updateInfo = UpdateManager.GetUpdateInfo();
-                    }
-                    Process proc = new Process();
-                    proc.StartInfo.FileName = "explorer.exe";
-                    proc.StartInfo.Arguments = updateInfo.DownloadLink;
-                    proc.Start();
-                }
-            }
-            else if(Result != CheckResult.Checking)
-            {
-                StartCheckUpdate();
             }
         }
     }

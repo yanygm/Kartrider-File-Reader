@@ -7,6 +7,7 @@ using KartRider;
 using KartRider.Xml;
 using System.IO;
 
+#nullable enable
 namespace KartRider.File
 {
     public class PackFolderManager

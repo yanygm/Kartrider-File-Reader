@@ -97,7 +97,6 @@ namespace RhoLoader
         private int _totalFiles = 0;
 
         private bool _terminated = false;
-        private bool _bg_worker_finished = false;
         
 
         public ExtractFolder(PackFolderInfo extract_folder, string extract_to_path, ExtractOptionToken extract_option)
@@ -119,7 +118,6 @@ namespace RhoLoader
             {
                 if (_terminated)
                 {
-                    _bg_worker_finished = true;
                     TerminateExtract();
                     return;
                 }
@@ -170,7 +168,6 @@ namespace RhoLoader
             {
                 if (_terminated)
                 {
-                    _bg_worker_finished = true;
                     TerminateExtract();
                     return;
                 }
@@ -192,12 +189,10 @@ namespace RhoLoader
                 catch (Exception ex) 
                 {
                     Debug.Print($"Error: {ex.Message}");
-                    this._bg_worker_finished = true;
                     TerminateExtract();
                 }
             }
             ReportProgress("Finished", _totalFiles);
-            _bg_worker_finished = true;
             FinishExtract();
         }
 

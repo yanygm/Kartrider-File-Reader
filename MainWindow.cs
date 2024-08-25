@@ -22,6 +22,7 @@ using System.Reflection;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Security.Cryptography;
 
+#nullable enable
 namespace RhoLoader
 {
     public partial class MainWindow : Form

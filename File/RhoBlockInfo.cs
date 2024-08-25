@@ -7,6 +7,7 @@ using System.IO;
 using KartRider.Encrypt;
 using Ionic.Zlib;
 
+#nullable enable
 namespace KartRider.File
 {
     public class RhoBlockInfo: IComparable<RhoBlockInfo>

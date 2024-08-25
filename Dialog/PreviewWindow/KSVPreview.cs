@@ -11,6 +11,7 @@ using KartRider;
 using KartRider.Record;
 using KartRider.Xml;
 
+#nullable enable
 namespace RhoLoader.PreviewWindow
 {
     public partial class KSVPreview : Form
