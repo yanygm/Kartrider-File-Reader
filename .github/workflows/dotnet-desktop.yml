@@ -19,7 +19,7 @@ jobs:
 
     env:
       Solution_Name: RhoLoader.sln
-      Test_Project_Path: src\RhoLoader\RhoLoader.csproj
+      Test_Project_Path: RhoLoader.csproj
 
     steps:
     - name: Checkout
@@ -60,7 +60,7 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
     - name: Publish Desktop App
-      run: dotnet publish -p:PublishProfile="src\RhoLoader\Properties\PublishProfiles\x64 version" -c Release
+      run: dotnet publish -p:PublishProfile="Properties\PublishProfiles\x64 version" -c Release
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
         DOTNET_NOLOGO: true
@@ -70,4 +70,4 @@ jobs:
       uses: actions/upload-artifact@v4.3.3
       with:
         name: RhoLoader
-        path: D:\a\Kartrider-File-Reader\Kartrider-File-Reader\publish_pool\RhoLoader\x64\*
+        path: publish_pool\RhoLoader\x64\*
