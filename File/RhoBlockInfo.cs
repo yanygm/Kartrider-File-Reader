@@ -68,7 +68,7 @@ namespace KartRider.File
         {
             RhoBlockInfo BlockInfo = RhoFile.GetBlockInfo(BlockIndex);
             if (BlockInfo is null)
-                return;
+                return [];
             reader.BaseStream.Seek(BlockInfo.Offset, SeekOrigin.Begin);
             byte[] BlockData = reader.ReadBytes(BlockInfo.BlockSize);
             if ((BlockInfo.BlockProperty & RhoBlockProperty.Compressed) == RhoBlockProperty.Compressed)

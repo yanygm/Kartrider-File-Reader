@@ -19,7 +19,7 @@ namespace KartRider.File
 
             public BinaryXmlTag Obj;
 
-            public PackFolderInfo Parent;
+            public PackFolderInfo? Parent;
         }
 
         public PackFolderManager()
@@ -59,13 +59,15 @@ namespace KartRider.File
                 ProcessQue.Enqueue(new ProcessObj
                 {
                     Obj = subtag,
-                    Parent = [],
+                    Parent = null,
                     Path = ""
                 });
             }
             while (ProcessQue.Count > 0)
             {
                 ProcessObj currectProcObj = ProcessQue.Dequeue();
+                if (currectProcObj.Obj is null)
+                    return;
                 BinaryXmlTag currentTag = currectProcObj.Obj;
                 switch (currentTag.Name)
                 {
@@ -102,7 +104,10 @@ namespace KartRider.File
                             ParentFolder = currectProcObj.Parent
                         };
                         if (name == "")
-                            NewFolder = currectProcObj.Parent;
+                            if (currectProcObj.Parent is null)
+                                return;
+                            else
+                                NewFolder = currectProcObj.Parent;
                         else {
                             if (currectProcObj.Parent is null)
                                 RootFolder.Folders.Add(NewFolder);
@@ -146,15 +151,17 @@ namespace KartRider.File
                 }
             }
             RegionCode regionCode = RegionCode.None;
-            
-            PackFolderInfo[] ZETA_Folders = GetDirectories("zeta");
+            PackFolderInfo[]? ZETA_Folders = GetDirectories("zeta");
+            if (ZETA_Folders is null)
+                return;
             if (Array.Exists(ZETA_Folders, x => x.FolderName == "kr"))
                 regionCode = RegionCode.Korea;
             else if (Array.Exists(ZETA_Folders, x => x.FolderName == "cn"))
                 regionCode = RegionCode.China;
             else if (Array.Exists(ZETA_Folders, x => x.FolderName == "tw"))
                 regionCode = RegionCode.Taiwan;
-            
+            if (fileInfo.DirectoryName is null)
+                return;
             foreach (string file in Directory.GetFiles(fileInfo.DirectoryName, "*.rho5"))
             {
                 Rho5 rho5File = new Rho5(file, regionCode);
@@ -293,7 +300,7 @@ namespace KartRider.File
             {
                 PackFolderInfo? findFolder = currentFindFolders.Find(x => x.FolderName == sp);
                 if (findFolder is null)
-                    return null;
+                    return Array.Empty<PackFolderInfo>();
                 currentFindFolders = findFolder.Folders;
             }
             return currentFindFolders.ToArray();
@@ -302,16 +309,16 @@ namespace KartRider.File
         public PackFileInfo[]? GetFiles(string Path)
         {
             if (Path == "")
-                return new PackFileInfo[0];
+                return null;
             string[] path_sp = Path.Split('/');
-            PackFolderInfo currentFolder = new PackFolderInfo
+            PackFolderInfo? currentFolder = new PackFolderInfo
             {
                 Folders = RootFolder.Folders
             };
             int depth = path_sp.Length;
             foreach (string path in path_sp)
             {
-                if (currentFolder == null)
+                if (currentFolder is null)
                     return null;
                 if (depth == 1)
                     return currentFolder.Files.ToArray();
@@ -326,7 +333,7 @@ namespace KartRider.File
             if (Path == "")
                 return null;
             string[] path_sp = Path.Split('/');
-            PackFolderInfo currentFolder = new PackFolderInfo
+            PackFolderInfo? currentFolder = new PackFolderInfo
             {
                 Folders = RootFolder.Folders
             };
@@ -334,7 +341,7 @@ namespace KartRider.File
             List<PackFileInfo> find_files = new List<PackFileInfo>();
             foreach (string path in path_sp)
             {
-                if (currentFolder == null)
+                if (currentFolder is null)
                     return null;
                 if (depth == 1)
                 {
@@ -479,7 +486,7 @@ namespace KartRider.File
                 return file5Info.GetData();
             }
             else
-                return;
+                return [];
         }
         public object Clone()
         {
