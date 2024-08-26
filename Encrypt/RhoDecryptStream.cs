@@ -98,7 +98,8 @@ namespace KartRider.Encrypt
                             int nIndex = bufferRead & 0xF;
                             Vector128<byte> bufVec = Sse2.LoadVector128(bufPtr + bIndex);
                             if(nIndex != 0)
-                                bufVec = Sse2.ShiftRightLogical128BitLane(bufVec, (byte)nIndex);
+                                //bufVec = Sse2.ShiftRightLogical128BitLane(bufVec, (byte)nIndex);
+                                bufVec = ShiftRightLogical128BitLane(bufVec, nIndex);
                             Sse2.Store(writePtr + writePos, bufVec);
                             writePos += cpyLen;
                             bufferRead += cpyLen;
@@ -108,7 +109,7 @@ namespace KartRider.Encrypt
                 }
                 else
                 {
-                    for(int i = 0; i < readLen; i++)
+                    for (int i = 0; i < readLen; i++)
                     {
                         if (bufferRead >= bufferLength)
                             updateBuffer();
@@ -118,6 +119,28 @@ namespace KartRider.Encrypt
             }
             return readLen;
         }
+
+        // 假设 bufVec 是 Vector128<byte> 类型
+        Vector128<byte> ShiftRightLogical128BitLane(Vector128<byte> bufVec, int nIndex)
+        {
+            if (nIndex == 0)
+                return bufVec;
+
+            byte[] tempArray = new byte[16];
+
+            for (int i = 0; i < 16 - nIndex; i++)
+            {
+                tempArray[i] = tempArray[i + nIndex];
+            }
+
+            for (int i = 16 - nIndex; i < 16; i++)
+            {
+                tempArray[i] = 0; // 或者你可以设置为其他默认值
+            }
+
+            return Vector128.Create(tempArray);
+        }
+
 
         public override long Seek(long offset, SeekOrigin origin)
         {
