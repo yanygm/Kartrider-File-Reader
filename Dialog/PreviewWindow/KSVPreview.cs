@@ -16,8 +16,8 @@ namespace RhoLoader.PreviewWindow
 {
     public partial class KSVPreview : Form
     {
-        BinaryXmlTag LocaleData;
-        public KSVPreview(byte[] Data, BinaryXmlTag LocaleData = null)
+        private readonly BinaryXmlTag? LocaleData = null;
+        public KSVPreview(byte[] Data, BinaryXmlTag LocaleData)
         {
             InitializeComponent();
             this.LocaleData = LocaleData;
@@ -53,16 +53,19 @@ namespace RhoLoader.PreviewWindow
             }
         }
 
-        private void players_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        private void Players_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             if (e.IsSelected)
             {
-                e.Item.Selected = false;
-                e.Item.Focused = false;
+                if (e.Item != null)
+                {
+                    e.Item.Selected = false;
+                    e.Item.Focused = false;
+                }
             }
         }
 
-        private void players_MouseHover(object sender, EventArgs e)
+        private void Players_MouseHover(object sender, EventArgs e)
         {
             this.Cursor = Cursors.Default;
         }

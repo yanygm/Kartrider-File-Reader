@@ -99,8 +99,8 @@
             this.players.TabIndex = 2;
             this.players.UseCompatibleStateImageBehavior = false;
             this.players.View = System.Windows.Forms.View.Details;
-            this.players.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.players_ItemSelectionChanged);
-            this.players.MouseHover += new System.EventHandler(this.players_MouseHover);
+            this.players.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.Players_ItemSelectionChanged);
+            this.players.MouseHover += new System.EventHandler(this.Players_MouseHover);
             // 
             // columnHeader1
             // 

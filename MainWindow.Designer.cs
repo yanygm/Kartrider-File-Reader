@@ -106,7 +106,7 @@
             this.menu_file_open.Size = new System.Drawing.Size(170, 22);
             this.menu_file_open.Tag = "menu_open";
             this.menu_file_open.Text = "menu_open";
-            this.menu_file_open.Click += new System.EventHandler(this.action_open);
+            this.menu_file_open.Click += new System.EventHandler(this.Action_open);
             // 
             // menu_file_openFolder
             // 
@@ -115,7 +115,7 @@
             this.menu_file_openFolder.Size = new System.Drawing.Size(170, 22);
             this.menu_file_openFolder.Tag = "menu_openFolder";
             this.menu_file_openFolder.Text = "menu_openFolder";
-            this.menu_file_openFolder.Click += new System.EventHandler(this.action_openFolder);
+            this.menu_file_openFolder.Click += new System.EventHandler(this.Action_openFolder);
             // 
             // toolStripSeparator1
             // 
@@ -130,7 +130,7 @@
             this.menu_file_exit.Size = new System.Drawing.Size(170, 22);
             this.menu_file_exit.Tag = "menu_exit";
             this.menu_file_exit.Text = "menu_exit";
-            this.menu_file_exit.Click += new System.EventHandler(this.action_exit);
+            this.menu_file_exit.Click += new System.EventHandler(this.Action_exit);
             // 
             // menu_extract
             // 
@@ -151,7 +151,7 @@
             this.menu_extract_all.Size = new System.Drawing.Size(167, 22);
             this.menu_extract_all.Tag = "menu_extract_all";
             this.menu_extract_all.Text = "menu_extract_all";
-            this.menu_extract_all.Click += new System.EventHandler(this.action_extract_all);
+            this.menu_extract_all.Click += new System.EventHandler(this.Action_extract_all);
             // 
             // menu_extract_current
             // 
@@ -160,7 +160,7 @@
             this.menu_extract_current.Size = new System.Drawing.Size(167, 22);
             this.menu_extract_current.Tag = "menu_extract_current";
             this.menu_extract_current.Text = "menu_extract_current";
-            this.menu_extract_current.Click += new System.EventHandler(this.action_extract_current);
+            this.menu_extract_current.Click += new System.EventHandler(this.Action_extract_current);
             // 
             // menu_about
             // 
@@ -170,7 +170,7 @@
             this.menu_about.Size = new System.Drawing.Size(86, 20);
             this.menu_about.Tag = "menu_about";
             this.menu_about.Text = "menu_about";
-            this.menu_about.Click += new System.EventHandler(this.action_aboutWindow);
+            this.menu_about.Click += new System.EventHandler(this.Action_aboutWindow);
             // 
             // menu_lang
             // 
@@ -201,8 +201,8 @@
             this.listview_main.TabIndex = 5;
             this.listview_main.UseCompatibleStateImageBehavior = false;
             this.listview_main.View = System.Windows.Forms.View.Details;
-            this.listview_main.MouseClick += new System.Windows.Forms.MouseEventHandler(this.action_listview_click);
-            this.listview_main.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.action_listview_doubleclick);
+            this.listview_main.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Action_listview_click);
+            this.listview_main.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.Action_listview_doubleclick);
             // 
             // columnHeader1
             // 
@@ -249,7 +249,7 @@
             this.filemenu_extractfile.Size = new System.Drawing.Size(190, 22);
             this.filemenu_extractfile.Tag = "filemenu_extractfile";
             this.filemenu_extractfile.Text = "filemenu_extractfile";
-            this.filemenu_extractfile.Click += new System.EventHandler(this.action_extractfile);
+            this.filemenu_extractfile.Click += new System.EventHandler(this.Action_extractfile);
             // 
             // filemenu_extract_selected
             // 
@@ -257,7 +257,7 @@
             this.filemenu_extract_selected.Size = new System.Drawing.Size(190, 22);
             this.filemenu_extract_selected.Tag = "filemenu_extract_selected";
             this.filemenu_extract_selected.Text = "filemenu_extract_selected";
-            this.filemenu_extract_selected.Click += new System.EventHandler(this.action_extract_selected);
+            this.filemenu_extract_selected.Click += new System.EventHandler(this.Action_extract_selected);
             // 
             // filemenu_convertPNG
             // 
@@ -265,7 +265,7 @@
             this.filemenu_convertPNG.Size = new System.Drawing.Size(190, 22);
             this.filemenu_convertPNG.Tag = "filemenu_convertPng";
             this.filemenu_convertPNG.Text = "filemenu_convertPng";
-            this.filemenu_convertPNG.Click += new System.EventHandler(this.action_convert_png);
+            this.filemenu_convertPNG.Click += new System.EventHandler(this.Action_convert_png);
             // 
             // filemenu_convertXML
             // 
@@ -273,13 +273,13 @@
             this.filemenu_convertXML.Size = new System.Drawing.Size(190, 22);
             this.filemenu_convertXML.Tag = "filemenu_convertXML";
             this.filemenu_convertXML.Text = "filemenu_convertXML";
-            this.filemenu_convertXML.Click += new System.EventHandler(this.action_convert_xml);
+            this.filemenu_convertXML.Click += new System.EventHandler(this.Action_convert_xml);
             //
             // treeview_explorer
             //
             this.treeview_explorer.Name = "treeview_explorer";
             this.treeview_explorer.Dock = DockStyle.Fill;
-            this.treeview_explorer.AfterSelect += new TreeViewEventHandler(action_node_select);
+            this.treeview_explorer.AfterSelect += new TreeViewEventHandler(Action_node_select);
             this.treeview_explorer.Tag = "treeview_explorer";
             // 
             // split_main
@@ -338,8 +338,8 @@
             this.icon_back.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.icon_back.TabIndex = 1;
             this.icon_back.TabStop = false;
-            this.icon_back.EnabledChanged += new System.EventHandler(this.action_icon_enable_changed);
-            this.icon_back.Click += new System.EventHandler(this.action_back);
+            this.icon_back.EnabledChanged += new System.EventHandler(this.Action_icon_enable_changed);
+            this.icon_back.Click += new System.EventHandler(this.Action_back);
             // 
             // MainWindow
             // 
@@ -400,4 +400,3 @@
         private Controls.DarkTreeView treeview_explorer;
     }
 }
-

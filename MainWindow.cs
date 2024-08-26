@@ -27,13 +27,13 @@ namespace RhoLoader
 {
     public partial class MainWindow : Form
     {
-        private SettingLoader BaseSettingLoader = new SettingLoader();
+        private readonly SettingLoader BaseSettingLoader = new SettingLoader();
         
-        private PackFolderManager BaseFolderManager = new PackFolderManager();
+        private readonly PackFolderManager BaseFolderManager = new PackFolderManager();
 
-        private PackFolderInfo _root_folder;
+        private PackFolderInfo _root_folder = new PackFolderInfo();
 
-        private PackFolderInfo _cur_folder;
+        private PackFolderInfo _cur_folder = new PackFolderInfo();
 
 
         public MainWindow()
@@ -48,32 +48,28 @@ namespace RhoLoader
             listview_main.SmallImageList.Images.Add("file", new Bitmap(global::RhoLoader.Properties.Resources.baseline_insert_drive_file_black_18dp));
             listview_main.SmallImageList.Images.Add("folder", new Bitmap(global::RhoLoader.Properties.Resources.folder_close));
         }
-        public MainWindow(StartupOption startupOption) : this()
-        {
-
-        }
 
         #region Globalization
         private void LoadLang()
         {
-            this.menu.Text = ((string)this.menu.Tag).GetStringBag();
-            this.menu_file.Text = ((string)this.menu_file.Tag).GetStringBag();
-            this.menu_file_open.Text = ((string)this.menu_file_open.Tag).GetStringBag();
-            this.menu_file_openFolder.Text = ((string)this.menu_file_openFolder.Tag).GetStringBag();
-            this.menu_file_exit.Text = ((string)this.menu_file_exit.Tag).GetStringBag();
-            this.menu_extract.Text = ((string)this.menu_extract.Tag).GetStringBag();
-            this.menu_extract_all.Text = ((string)this.menu_extract_all.Tag).GetStringBag();
-            this.menu_extract_current.Text = ((string)this.menu_extract_current.Tag).GetStringBag();
-            this.filemenu_extractfile.Text = ((string)this.filemenu_extractfile.Tag).GetStringBag();
-            this.menu_about.Text = ((string)this.menu_about.Tag).GetStringBag();
-            this.columnHeader1.Text = ((string)this.columnHeader1.Tag).GetStringBag();
-            this.columnHeader2.Text = ((string)this.columnHeader2.Tag).GetStringBag();
-            this.columnHeader3.Text = ((string)this.columnHeader3.Tag).GetStringBag();
-            this.Text = ((string)this.Tag).GetStringBag();
-            this.menu_lang.Text = ((string)this.menu_lang.Tag).GetStringBag();
-            this.filemenu_extract_selected.Text = ((string)this.filemenu_extract_selected.Tag).GetStringBag();
-            this.filemenu_convertPNG.Text = ((string)this.filemenu_convertPNG.Tag).GetStringBag();
-            this.filemenu_convertXML.Text = ((string)this.filemenu_convertXML.Tag).GetStringBag();
+            this.menu.Text = ((string)(this.menu.Tag ?? "null")).GetStringBag();
+            this.menu_file.Text = ((string)(this.menu_file.Tag ?? "null")).GetStringBag();
+            this.menu_file_open.Text = ((string)(this.menu_file_open.Tag ?? "null")).GetStringBag();
+            this.menu_file_openFolder.Text = ((string)(this.menu_file_openFolder.Tag ?? "null")).GetStringBag();
+            this.menu_file_exit.Text = ((string)(this.menu_file_exit.Tag ?? "null")).GetStringBag();
+            this.menu_extract.Text = ((string)(this.menu_extract.Tag ?? "null")).GetStringBag();
+            this.menu_extract_all.Text = ((string)(this.menu_extract_all.Tag ?? "null")).GetStringBag();
+            this.menu_extract_current.Text = ((string)(this.menu_extract_current.Tag ?? "null")).GetStringBag();
+            this.filemenu_extractfile.Text = ((string)(this.filemenu_extractfile.Tag ?? "null")).GetStringBag();
+            this.menu_about.Text = ((string)(this.menu_about.Tag ?? "null")).GetStringBag();
+            this.columnHeader1.Text = ((string)(this.columnHeader1.Tag ?? "null")).GetStringBag();
+            this.columnHeader2.Text = ((string)(this.columnHeader2.Tag ?? "null")).GetStringBag();
+            this.columnHeader3.Text = ((string)(this.columnHeader3.Tag ?? "null")).GetStringBag();
+            this.Text = ((string)(this.Tag ?? "null")).GetStringBag();
+            this.menu_lang.Text = ((string)(this.menu_lang.Tag ?? "null")).GetStringBag();
+            this.filemenu_extract_selected.Text = ((string)(this.filemenu_extract_selected.Tag ?? "null")).GetStringBag();
+            this.filemenu_convertPNG.Text = ((string)(this.filemenu_convertPNG.Tag ?? "null")).GetStringBag();
+            this.filemenu_convertXML.Text = ((string)(this.filemenu_convertXML.Tag ?? "null")).GetStringBag();
             LoadLangFont();
             if (_cur_folder is not null)
                 UpdateUIFolder();
@@ -91,7 +87,7 @@ namespace RhoLoader
                 ToolStripMenuItem menu_langname = new ToolStripMenuItem();
                 menu_langname.Text = lang.DisplayName;
                 menu_langname.AutoSize = true;
-                menu_langname.Click += action_changeLanguage;
+                menu_langname.Click += Action_changeLanguage;
                 menu_langname.Font = lang.GetLangFontWithBase(this.Font);
                 temp.Add(menu_langname);
             }
@@ -110,7 +106,7 @@ namespace RhoLoader
             this.filemenu_extractfile.Font = LanguageManager.GetLangFontWithBase(this.filemenu_extractfile.Font);
             this.menu_about.Font = LanguageManager.GetLangFontWithBase(this.menu_about.Font);
             this.listview_main.Font = LanguageManager.GetLangFontWithBase(this.listview_main.Font);
-            this.Text = ((string)this.Tag).GetStringBag();
+            this.Text = ((string)(this.Tag ?? "null")).GetStringBag();
             //this.menu_lang.Font = LanguageManager.GetLangFontWithBase(this.menu_lang.Font);
             this.filemenu_convertPNG.Font = LanguageManager.GetLangFontWithBase(this.filemenu_convertPNG.Font);
             this.filemenu_convertXML.Font = LanguageManager.GetLangFontWithBase(this.filemenu_convertXML.Font);
@@ -129,15 +125,17 @@ namespace RhoLoader
         }
         #endregion
         #region Control Action
-        private void action_changeLanguage(object sender, EventArgs e)
+        private void Action_changeLanguage(object? sender, EventArgs e)
         {
+            if (sender == null)
+                return;
             ToolStripItem menu_langname = (ToolStripItem)sender;
             LanguageManager.SetLanguage(DisplayName: menu_langname.Text);
             BaseSettingLoader.Setting.Language = LanguageManager.LanguageName;
             BaseSettingLoader.SaveSetting("Setting.json");
             LoadLang();
         }
-        private void action_openFolder(object sender, EventArgs e)
+        private void Action_openFolder(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             fbd.Description = "Please select Data folder including aaa.pk.";
@@ -151,7 +149,12 @@ namespace RhoLoader
                     BaseFolderManager.Initization($"{fbd.SelectedPath}\\aaa.pk");
                     Queue<PackFolderInfo> folderQueue = new Queue<PackFolderInfo>();
                     Queue<TreeNode> nodeQueue = new Queue<TreeNode>();
-                    PackFolderInfo[] rootFolders = BaseFolderManager.GetDirectories("");
+                    PackFolderInfo[] rootFolders = BaseFolderManager.GetDirectories("") ?? Array.Empty<PackFolderInfo>();
+                    if (rootFolders == null)
+                    {
+                        MessageBox.Show("No directories found.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
                     foreach (PackFolderInfo folder in rootFolders)
                     {
                         folderQueue.Enqueue(folder);
@@ -185,7 +188,7 @@ namespace RhoLoader
                 }
             }
         }
-        private void action_open(object sender, EventArgs e)
+        private void Action_open(object sender, EventArgs e)
         {
             if(dialog_singleFile.ShowDialog() == DialogResult.OK)
             {
@@ -193,7 +196,12 @@ namespace RhoLoader
                 BaseFolderManager.OpenSingleFile(dialog_singleFile.FileName);
                 Queue<PackFolderInfo> folderQueue = new Queue<PackFolderInfo>();
                 Queue<TreeNode> nodeQueue = new Queue<TreeNode>();
-                PackFolderInfo[] rootFolders = BaseFolderManager.GetDirectories("");
+                PackFolderInfo[] rootFolders = BaseFolderManager.GetDirectories("") ?? Array.Empty<PackFolderInfo>();
+                if (rootFolders == null)
+                {
+                    MessageBox.Show("No directories found.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
                 foreach (PackFolderInfo folder in rootFolders)
                 {
                     folderQueue.Enqueue(folder);
@@ -226,16 +234,16 @@ namespace RhoLoader
                 UpdateUIFolder();
             }
         }
-        private void action_aboutWindow(object sender, EventArgs e)
+        private void Action_aboutWindow(object sender, EventArgs e)
         {
             AboutMe aboutDialog = new AboutMe();
             aboutDialog.ShowDialog();
         } 
-        private void action_exit(object sender, EventArgs e)
+        private void Action_exit(object sender, EventArgs e)
         {
             Application.Exit();
         }
-        private void action_listview_click(object sender, MouseEventArgs e)
+        private void Action_listview_click(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right)
                 return;
@@ -256,7 +264,7 @@ namespace RhoLoader
                 filemenu_convertXML.Enabled = false;
             }
         }
-        private void action_listview_doubleclick(object sender, MouseEventArgs e)
+        private void Action_listview_doubleclick(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left || listview_main.SelectedItems.Count == 0)
                 return;
@@ -299,7 +307,7 @@ namespace RhoLoader
                     }
                     else
                     {
-                        KSVPreview preview = new KSVPreview(ksvData);
+                        KSVPreview preview = new KSVPreview(ksvData, new BinaryXmlTag());
                         preview.Show();
                     }
                 }
@@ -313,7 +321,7 @@ namespace RhoLoader
                     byte[] data = sel_file.GetData();
                     fs.Write(data, 0, data.Length);
                     fs.Close();
-                    data = null;
+                    data = [];
                     Process ps = new Process();
                     ps.StartInfo.FileName = "explorer.exe";
                     ps.StartInfo.Arguments = Environment.GetEnvironmentVariable("TEMP") + $"\\{FileName}";
@@ -326,11 +334,11 @@ namespace RhoLoader
                 UpdateUIFolder();
             }
         }
-        private void action_back(object sender, EventArgs e)
+        private void Action_back(object sender, EventArgs e)
         {
             if(_cur_folder != _root_folder)
             {
-                _cur_folder = _cur_folder.ParentFolder == null ? _root_folder : _cur_folder.ParentFolder;
+                _cur_folder = _cur_folder.ParentFolder ?? _root_folder;
                 UpdateUIFolder();
             }
             else
@@ -338,28 +346,26 @@ namespace RhoLoader
                 icon_back.Enabled = false;
             }
         }
-        private void action_icon_enable_changed(object sender, EventArgs e)
+        private void Action_icon_enable_changed(object sender, EventArgs e)
         {
             if (icon_back.Enabled)
                 this.icon_back.Image = global::RhoLoader.Properties.Resources.ic_fluent_arrow_hook_up_left_24_filled;
             else
                 this.icon_back.Image = global::RhoLoader.Properties.Resources.ic_fluent_arrow_hook_up_left_24_filled_disabled;
         }
-        private void action_node_select(object sender, TreeViewEventArgs e)
+        private void Action_node_select(object sender, TreeViewEventArgs e)
         {
             var click_node = e.Node;
             if (click_node is null)
                 return;
-            var node_info = click_node.Tag as NodeInfoContainer;
-            if (node_info is null)
+            if (click_node.Tag is not NodeInfoContainer node_info)
                 return;
-            var folder_info = node_info.BaseData as PackFolderInfo;
-            if (folder_info is null)
+            if (node_info.BaseData is not PackFolderInfo folder_info)
                 return;
             _cur_folder = folder_info;
             UpdateUIFolder();
         }
-        private void action_extract_all(object sender, EventArgs e)
+        private void Action_extract_all(object sender, EventArgs e)
         {
             if (_cur_folder is null)
             {
@@ -376,7 +382,7 @@ namespace RhoLoader
                     MessageBox.Show("msg_cancel_operation".GetStringBag(), "msg_level_info".GetStringBag(), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
-        private void action_extract_current(object sender, EventArgs e)
+        private void Action_extract_current(object sender, EventArgs e)
         {
             if (_cur_folder is null)
             {
@@ -393,7 +399,7 @@ namespace RhoLoader
                     MessageBox.Show("msg_cancel_operation".GetStringBag(), "msg_level_info".GetStringBag(), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
-        private void action_extractfile(object sender, EventArgs e)
+        private void Action_extractfile(object sender, EventArgs e)
         {
             if (listview_main.SelectedItems.Count == 0)
                 return;
@@ -410,11 +416,11 @@ namespace RhoLoader
                     byte[] data = sel_file.GetData();
                     fs.Write(data, 0, data.Length);
                     fs.Close();
-                    data = null;
+                    data = [];
                 }
             }
         }
-        private void action_extract_selected(object sender, EventArgs e)
+        private void Action_extract_selected(object sender, EventArgs e)
         {
             if (listview_main.SelectedItems.Count == 0)
                 return;
@@ -427,7 +433,7 @@ namespace RhoLoader
             ExtractOption _extractOptionDialog = new ExtractOption();
             if (_folderDialog.ShowDialog() == DialogResult.OK && _extractOptionDialog.ShowDialog() == DialogResult.OK)
             {
-                List<PackFileInfo> output_files = new List<PackFileInfo>();
+                List<PackFileInfo> output_files = [];
                 List<PackFolderInfo> output_folders = new List<PackFolderInfo>();
                 foreach (ListViewItem sel_item in listview_main.SelectedItems)
                 {
@@ -446,7 +452,7 @@ namespace RhoLoader
                     MessageBox.Show("msg_cancel_operation".GetStringBag(), "msg_level_info".GetStringBag(), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
-        private void action_convert_png(object sender, EventArgs e)
+        private void Action_convert_png(object sender, EventArgs e)
         {
             if (listview_main.SelectedItems.Count == 0)
                 return;
@@ -455,13 +461,13 @@ namespace RhoLoader
             {
                 string FileName = listview_main.SelectedItems[0].SubItems[0].Text;
                 byte[] data = sel_file.GetData();
-                TgaDDsViewer tga_viewer = new TgaDDsViewer();
+                TgaDDsViewer tga_viewer = new();
                 tga_viewer.Data = data;
                 tga_viewer.ConvertTGADDSToPng();
-                data = null;
+                data = [];
             }
         }
-        private void action_convert_xml(object sender, EventArgs e)
+        private void Action_convert_xml(object sender, EventArgs e)
         {
             if (listview_main.SelectedItems.Count == 0)
                 return;
@@ -532,7 +538,7 @@ namespace RhoLoader
             listview_main.Items.Clear();
             BaseFolderManager.Reset();
         }
-        private string FormatDataLength(int length)
+        private static string FormatDataLength(int length)
         {
             string[] units = { "Bytes", "KiB", "MiB" };
             double dlen = length;
@@ -543,7 +549,7 @@ namespace RhoLoader
                 else
                     return $"{dlen: 0.00} {unit}";
             }
-            return $"{dlen} {units[units.Length - 1]}";
+            return $"{dlen} {units[^1]}";
         }
         #endregion
 
