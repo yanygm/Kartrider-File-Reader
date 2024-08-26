@@ -45,7 +45,7 @@ namespace RhoLoader
             LoadSetting();
             LoadLang();
             listview_main.SmallImageList = imageList_listview;
-            listview_main.SmallImageList.Images.Add("file", new Bitmap(global::RhoLoader.Properties.Resources.baseline_insert_drive_file_black_18dp));
+            listview_main.SmallImageList.Images.Add("file", new Bitmap(global::RhoLoader.Properties.Resources.file_black_18dp));
             listview_main.SmallImageList.Images.Add("folder", new Bitmap(global::RhoLoader.Properties.Resources.folder_close));
         }
 
@@ -349,9 +349,9 @@ namespace RhoLoader
         private void Action_icon_enable_changed(object sender, EventArgs e)
         {
             if (icon_back.Enabled)
-                this.icon_back.Image = global::RhoLoader.Properties.Resources.ic_fluent_arrow_hook_up_left_24_filled;
+                this.icon_back.Image = global::RhoLoader.Properties.Resources.left_24_filled;
             else
-                this.icon_back.Image = global::RhoLoader.Properties.Resources.ic_fluent_arrow_hook_up_left_24_filled_disabled;
+                this.icon_back.Image = global::RhoLoader.Properties.Resources.left_24_filled_disabled;
         }
         private void Action_node_select(object sender, TreeViewEventArgs e)
         {
