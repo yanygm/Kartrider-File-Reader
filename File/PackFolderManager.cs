@@ -59,7 +59,7 @@ namespace KartRider.File
                 ProcessQue.Enqueue(new ProcessObj
                 {
                     Obj = subtag,
-                    Parent = null,
+                    Parent = [],
                     Path = ""
                 });
             }
@@ -462,11 +462,11 @@ namespace KartRider.File
     }
     public class PackFileInfo: ICloneable
     {
-        public string FileName { get; set; }
-        public string FullName { get; set; }
+        public required string FileName { get; set; }
+        public required string FullName { get; set; }
         public int FileSize { get; set; }
         public PackFileType PackFileType { get; set; }
-        public object OriginalFile { get; set; }
+        public required object OriginalFile { get; set; }
 
         public byte[] GetData()
         {
@@ -479,7 +479,7 @@ namespace KartRider.File
                 return file5Info.GetData();
             }
             else
-                return null;
+                return;
         }
         public object Clone()
         {
