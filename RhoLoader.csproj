@@ -26,6 +26,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources/folder_black_18dp.png" />
+    <None Remove="Resources/file_black_18dp.png" />
+    <None Remove="Resources/left_24_filled.png" />
+    <None Remove="Resources/left_black_18dp.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Pfim" Version="0.11.2" />
     <PackageReference Include="Ionic.Zlib.Core" Version="1.0.0" />
@@ -75,10 +82,6 @@
     <EmbeddedResource Include="Controls/DarkTreeView/Icons/object_unknown.png" />
     <EmbeddedResource Include="Controls/DarkTreeView/Icons/relement_base.png" />
     <EmbeddedResource Include="Controls/DarkTreeView/Icons/relement_recamera.png" />
-    <Resource Include="Resources/baseline_arrow_left_black_18dp.png" />
-    <Resource Include="Resources/baseline_folder_black_18dp.png" />
-    <Resource Include="Resources/baseline_insert_drive_file_black_18dp.png" />
-    <Resource Include="Resources/ic_fluent_arrow_hook_up_left_24_filled.png" />
   </ItemGroup>
 
   <ItemGroup>
