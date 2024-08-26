@@ -331,7 +331,7 @@
             // 
             this.icon_back.Dock = System.Windows.Forms.DockStyle.Left;
             this.icon_back.Enabled = false;
-            this.icon_back.Image = global::RhoLoader.Properties.Resources.ic_fluent_arrow_hook_up_left_24_filled_disabled;
+            this.icon_back.Image = global::RhoLoader.Properties.Resources.left_24_filled_disabled;
             this.icon_back.Location = new System.Drawing.Point(0, 0);
             this.icon_back.Name = "icon_back";
             this.icon_back.Size = new System.Drawing.Size(24, 24);
