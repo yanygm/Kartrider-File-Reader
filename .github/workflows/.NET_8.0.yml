@@ -27,4 +27,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: RhoLoader
-        path: publish_pool/RhoLoader/x64/*
+        path: publish_pool/RhoLoader/x64/
