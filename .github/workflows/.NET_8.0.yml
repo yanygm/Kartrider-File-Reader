@@ -21,7 +21,7 @@ jobs:
       run: dotnet build -c Release RhoLoader/RhoLoader.csproj
 
     - name: Publish
-      run: dotnet publish -p:PublishProfile="RhoLoader/Properties/PublishProfiles/x64 version.pubxml" -c Release
+      run: dotnet publish -p:PublishProfile="RhoLoader/Properties/PublishProfiles/x64 version.pubxml" -c Release RhoLoader/RhoLoader.csproj
 
     - name: Archive Artifacts
       uses: actions/upload-artifact@v4
