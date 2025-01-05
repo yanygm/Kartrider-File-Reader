@@ -8,6 +8,6 @@ namespace RhoLoader
 {
     public static class AppBaseInfo
     {
-        public const string UpdateInfoLink = "https://raw.githubusercontent.com/xpoi5010/Kartrider-File-Reader/main/VersionInfo.json";
+        public const string UpdateInfoLink = "https://raw.githubusercontent.com/yanygm/Kartrider-File-Reader/refs/heads/main/VersionInfo.json";
     }
 }
