@@ -335,6 +335,11 @@ namespace KartLibrary.File
                 FileInfo fileInfo = new FileInfo(rhoFile);
                 if (!fileInfo.Exists)
                     throw new FileNotFoundException(rhoFile);
+                if (rhoFile.EndsWith(".rho5"))
+                {
+                    OpenRho5File(rhoFile, regionCode);
+                    return;
+                }
                 Rho rho = new Rho(rhoFile);
                 Queue<(PackFolderInfo, RhoDirectory)> dirQue = new Queue<(PackFolderInfo, RhoDirectory)>();
 
