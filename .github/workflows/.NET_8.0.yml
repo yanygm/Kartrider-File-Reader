@@ -27,4 +27,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: RhoLoader
-        path: RhoLoader/bin/Release/net8.0-windows/win-x64/
+        path: RhoLoader/bin/Release/net8.0-windows/win-x64/publish/
