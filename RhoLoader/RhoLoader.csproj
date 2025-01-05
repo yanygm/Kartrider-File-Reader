@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -13,6 +14,7 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <BaseOutputPath>bin</BaseOutputPath>
     <NuGetAudit>False</NuGetAudit>
+    <UseWindowsForms>True</UseWindowsForms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -48,10 +50,10 @@
     <Compile Update="Dialog\PreviewWindow\KSVPreview.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Properties\Resources.Designer.cs">
+    <Compile Update="Resource.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
+      <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -83,14 +85,14 @@
     <Resource Include="Resources\baseline_arrow_left_black_18dp.png" />
     <Resource Include="Resources\baseline_folder_black_18dp.png" />
     <Resource Include="Resources\baseline_insert_drive_file_black_18dp.png" />
+    <Resource Include="Resources\file_image.png" />
+    <Resource Include="Resources\file_ksv.png" />
+    <Resource Include="Resources\file_music.png" />
+    <Resource Include="Resources\file_xml.png" />
+    <Resource Include="Resources\folder_close.png" />
     <Resource Include="Resources\ic_fluent_arrow_hook_up_left_24_filled.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <Resource Include="Resources\ic_fluent_arrow_hook_up_left_24_filled_disabled.png" />
+    <Resource Include="Resources\object_unknown.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -121,6 +123,13 @@
   <ItemGroup>
     <Folder Include="Model\Services\" />
     <Folder Include="Update\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
