@@ -201,7 +201,7 @@ namespace RhoLoader
             if (output.EndsWith(".rho5"))
                 output = output.Replace(".rho5", "");
             PackFolderManager packFolderManager = new PackFolderManager();
-            packFolderManager.OpenSingleFile(input, CC);
+            packFolderManager.OpenSingleFile(CC, input);
             Queue<PackFolderInfo> packFolderInfoQueue = new Queue<PackFolderInfo>();
             packFolderInfoQueue.Enqueue(packFolderManager.GetRootFolder());
             packFolderManager.GetRootFolder();
