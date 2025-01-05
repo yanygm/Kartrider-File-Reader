@@ -17,6 +17,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PublishSingleFile>true</PublishSingleFile>
     <DebugType>none</DebugType>
     <Optimize>False</Optimize>
     <FileAlignment>1024</FileAlignment>
@@ -24,6 +25,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PublishSingleFile>true</PublishSingleFile>
     <DebugType>none</DebugType>
     <FileAlignment>1024</FileAlignment>
     <WarningLevel>0</WarningLevel>
