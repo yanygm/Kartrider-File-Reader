@@ -216,7 +216,7 @@ namespace KartLibrary.File
 
         }
 
-        public void OpenSingleFile(string rhoFile)
+        public void OpenSingleFile(CountryCode CC, string rhoFile)
         {
             FileInfo fileInfo = new FileInfo(rhoFile);
             if (!fileInfo.Exists)
@@ -224,7 +224,7 @@ namespace KartLibrary.File
             Reset();
             if (rhoFile.EndsWith(".rho5"))
             {
-                OpenRho5File(rhoFile, Program.CC);
+                OpenRho5File(rhoFile, CC);
                 return;
             }
             Rho rho = new Rho(rhoFile);
@@ -327,7 +327,7 @@ namespace KartLibrary.File
             }
         }
 
-        public void OpenMultipleFiles(params string[] rhoFiles)
+        public void OpenMultipleFiles(CountryCode CC, params string[] rhoFiles)
         {
             Reset();
             foreach (string rhoFile in rhoFiles)
@@ -337,7 +337,7 @@ namespace KartLibrary.File
                     throw new FileNotFoundException(rhoFile);
                 if (rhoFile.EndsWith(".rho5"))
                 {
-                    OpenRho5File(rhoFile, Program.CC);
+                    OpenRho5File(rhoFile, CC);
                     return;
                 }
                 Rho rho = new Rho(rhoFile);

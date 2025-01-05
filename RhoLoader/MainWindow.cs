@@ -191,7 +191,7 @@ namespace RhoLoader
             if (dialog_singleFile.ShowDialog() == DialogResult.OK)
             {
                 CloseCurrentFile();
-                BaseFolderManager.OpenSingleFile(dialog_singleFile.FileName);
+                BaseFolderManager.OpenSingleFile(Program.CC, dialog_singleFile.FileName);
                 Queue<PackFolderInfo> folderQueue = new Queue<PackFolderInfo>();
                 Queue<TreeNode> nodeQueue = new Queue<TreeNode>();
                 PackFolderInfo[] rootFolders = BaseFolderManager.GetDirectories("");
@@ -233,7 +233,7 @@ namespace RhoLoader
             if (dialog_multiFile.ShowDialog() == DialogResult.OK)
             {
                 CloseCurrentFile();
-                BaseFolderManager.OpenMultipleFiles(dialog_multiFile.FileNames);
+                BaseFolderManager.OpenMultipleFiles(Program.CC, dialog_multiFile.FileNames);
                 Queue<PackFolderInfo> folderQueue = new Queue<PackFolderInfo>();
                 Queue<TreeNode> nodeQueue = new Queue<TreeNode>();
                 PackFolderInfo[] rootFolders = BaseFolderManager.GetDirectories("");
