@@ -351,7 +351,7 @@ namespace RhoLoader
             // 
             icon_back.Dock = DockStyle.Left;
             icon_back.Enabled = false;
-            icon_back.Image = Properties.Resources.ic_fluent_arrow_hook_up_left_24_filled_disabled;
+            icon_back.Image = RhoLoader.Resource.ic_fluent_arrow_hook_up_left_24_filled_disabled;
             icon_back.Location = new Point(0, 0);
             icon_back.Name = "icon_back";
             icon_back.Size = new Size(24, 24);
