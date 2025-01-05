@@ -1,0 +1,30 @@
+name: .NET 8.0
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.x
+
+    - name: Restore
+      run: dotnet restore RhoLoader/RhoLoader.csproj
+
+    - name: Build
+      run: dotnet build -c Release RhoLoader/RhoLoader.csproj
+
+    - name: Publish
+      run: dotnet publish -p:PublishProfile="RhoLoader/Properties/PublishProfiles/x64 version.pubxml" -c Release
+
+    - name: Archive Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: RhoLoader
+        path: publish_pool/RhoLoader/x64
