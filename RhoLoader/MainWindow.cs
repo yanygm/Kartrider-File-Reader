@@ -135,7 +135,7 @@ namespace RhoLoader
             BaseSettingLoader.Setting.Language = LanguageManager.LanguageName;
             BaseSettingLoader.SaveSetting("Setting.json");
             LoadLang();
-            string region_str = menu_langname.Text switch
+            string region_str = BaseSettingLoader.Setting.Language switch
             {
                 "ko-kr" => "KR",
                 "zh-cn" => "CN",
