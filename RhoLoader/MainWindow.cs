@@ -13,6 +13,7 @@ using System.Resources;
 using KartLibrary.Xml;
 using KartLibrary.IO;
 using KartLibrary.File;
+using KartLibrary.Consts;
 using RhoLoader.PreviewWindow;
 using RhoLoader.Setting;
 using System.Reflection;
