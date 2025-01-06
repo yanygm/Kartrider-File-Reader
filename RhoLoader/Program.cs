@@ -33,7 +33,6 @@ namespace RhoLoader
     static class Program
     {
         [DllImport("kernel32.dll")]
-        [return: MarshalType.Bool]
         public static extern bool AllocConsole();
         public static CountryCode CC = CountryCode.CN;
         /// <summary>
