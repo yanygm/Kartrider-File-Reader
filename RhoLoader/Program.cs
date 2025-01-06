@@ -38,10 +38,10 @@ namespace RhoLoader
         [STAThread]
         private static void Main(string[] args)
         {
-            if (!File.Exists("Setting.json"))
+            if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Setting.json"))
                 return;
             SettingLoader Language = new SettingLoader();
-            using (FileStream file_stream = new FileStream("Setting.json", FileMode.Open))
+            using (FileStream file_stream = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "Setting.json", FileMode.Open))
             {
                 Language.Setting = JsonSerializer.Deserialize<RhoLoader.Setting.Setting>(file_stream);
             }
