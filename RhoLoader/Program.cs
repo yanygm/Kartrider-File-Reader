@@ -10,6 +10,7 @@ using System.IO;
 using System.Diagnostics;
 using Microsoft.Win32;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Net;
 using RhoLoader.Update;
 using KartLibrary.IO;
