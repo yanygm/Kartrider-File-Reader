@@ -31,6 +31,9 @@ namespace RhoLoader
 {
     static class Program
     {
+        [DllImport("kernel32.dll")]
+        [return: MarshalType.Bool]
+        public static extern bool AllocConsole();
         public static CountryCode CC = CountryCode.CN;
         /// <summary>
         /// The main entry point for the application.
@@ -51,7 +54,7 @@ namespace RhoLoader
                 "zh-cn" => "CN",
                 "zh-tw" => "TW"
             };
-            if (region_str != "")
+            if (region_str == "KR" || region_str == "CN" || region_str == "TW")
                 CC = (CountryCode)Enum.Parse(typeof(CountryCode), region_str);
             string input;
             string output;
@@ -75,6 +78,7 @@ namespace RhoLoader
                 input = args[0];
                 output = args[1];
             }
+            AllocConsole();
             if (input.EndsWith(".rho") || input.EndsWith(".rho5"))
             {
                 Program.decode(input, output);
@@ -132,7 +136,6 @@ namespace RhoLoader
         {
             RhoArchive rhoArchive = new RhoArchive();
             string lastFolderName = Path.GetFileName(intput);
-            Console.WriteLine(lastFolderName);
             string array = lastFolderName.Replace('_', '\\'); ;
             GetAllFiles(intput + "\\" + array, new List<string>(), rhoArchive.RootFolder);
 
@@ -261,7 +264,6 @@ namespace RhoLoader
             BinaryXmlDocument bxd = new BinaryXmlDocument();
             bxd.Read(Encoding.GetEncoding("UTF-16"), data);
             string output_bml = bxd.RootTag.ToString();
-            Console.WriteLine(output_bml);
             byte[] output_data = Encoding.GetEncoding("UTF-16").GetBytes(output_bml);
             string filePath = System.IO.Path.ChangeExtension(input, "xml");
             using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
@@ -287,10 +289,8 @@ namespace RhoLoader
                         {
                             string elementName = reader.Name;
                             int attCount = reader.AttributeCount;
-                            Console.WriteLine($"元素: {elementName}");
                             outPacket.WriteString(elementName);
                             outPacket.WriteInt(0);
-                            Console.WriteLine($"属性数量: {attCount}");
                             outPacket.WriteInt(attCount);
                             for (int i = 0; i < attCount; i++)
                             {
@@ -299,9 +299,7 @@ namespace RhoLoader
                                 outPacket.WriteString(attName);
                                 string attValue = reader.Value;
                                 outPacket.WriteString(attValue);
-                                Console.WriteLine($"属性名: {attName}, 属性值: {attValue}");
                             }
-                            Console.WriteLine($"子元素数量: {childCounts[Count]}");
                             outPacket.WriteInt(childCounts[Count]);
                             Count++;
                             reader.MoveToElement();
@@ -338,7 +336,6 @@ namespace RhoLoader
             BinaryXmlDocument bxd = new BinaryXmlDocument();
             bxd.Read(Encoding.GetEncoding("UTF-16"), array);
             string output_bml = bxd.RootTag.ToString();
-            Console.WriteLine(output_bml);
             byte[] output_data = Encoding.GetEncoding("UTF-16").GetBytes(output_bml);
             string filePath = System.IO.Path.ChangeExtension(input, "xml");
             using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
@@ -356,7 +353,6 @@ namespace RhoLoader
                 BinaryWriter binaryWriter = new BinaryWriter(fileStream);
                 binaryWriter.Write((int)0);
                 int KRDataLength = binaryWriter.WriteKRData(array, false, true);
-                Console.WriteLine(KRDataLength);
                 binaryWriter.BaseStream.Seek(0, SeekOrigin.Begin);
                 binaryWriter.Write(KRDataLength);
             }
@@ -409,7 +405,6 @@ namespace RhoLoader
                 {
                     result = result.Replace(black.Replace("_", "!"), black);
                 }
-                Console.WriteLine(result);
                 string[] splitParts = result.Split('_');
                 XElement currentFolder = root;
                 for (int i = 0; i < splitParts.Length - 1; i++)
