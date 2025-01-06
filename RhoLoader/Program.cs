@@ -146,7 +146,8 @@ namespace RhoLoader
                 RhoFile item = new RhoFile
                 {
                     DataSource = new FileDataSource(file),
-                    Name = Path.GetFileName(file)
+                    Name = Path.GetFileName(file),
+                    FileEncryptionProperty = RhoFileProperty.Compressed
                 };
                 folder.AddFile(item);
             }
@@ -347,8 +348,14 @@ namespace RhoLoader
             byte[] array = File.ReadAllBytes(input);
             string filePath = System.IO.Path.ChangeExtension(input, "pk");
             using FileStream fileStream = new FileStream(filePath, FileMode.Create);
-            BinaryWriter binaryWriter = new BinaryWriter(fileStream);
-            binaryWriter.WriteKRData(array, false, true);
+            {
+                BinaryWriter binaryWriter = new BinaryWriter(fileStream);
+                binaryWriter.Write((int)0);
+                int KRDataLength = binaryWriter.WriteKRData(array, false, true);
+                Console.WriteLine(KRDataLength);
+                binaryWriter.BaseStream.Seek(0, SeekOrigin.Begin);
+                binaryWriter.Write(KRDataLength);
+            }
         }
 
         private static void AAAC(string input, string[] files)
