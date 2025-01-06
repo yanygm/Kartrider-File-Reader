@@ -24,6 +24,8 @@ using KartLibrary.Data;
 using KartLibrary.IO;
 using System.Numerics;
 using System.Text;
+using System.Text.Json;
+using RhoLoader.Setting;
 
 namespace RhoLoader
 {
@@ -36,18 +38,21 @@ namespace RhoLoader
         [STAThread]
         private static void Main(string[] args)
         {
-            string FileName = AppDomain.CurrentDomain.BaseDirectory + "CountryCode.ini";
-            if (File.Exists(FileName))
+            if (File.Exists("Setting.json"))
             {
-                string textValue = System.IO.File.ReadAllText(FileName);
-                CC = (CountryCode)Enum.Parse(typeof(CountryCode), textValue);
-            }
-            else
-            {
-                using (StreamWriter streamWriter = new StreamWriter(FileName, false))
+                SettingLoader settingLoader = new SettingLoader();
+                using (FileStream file_stream = new FileStream("Setting.json", FileMode.Open))
                 {
-                    streamWriter.Write(CC.ToString());
+                    settingLoader.Setting = JsonSerializer.Deserialize<RhoLoader.Setting.Setting>(file_stream);
                 }
+                string region_str = settingLoader.Setting.Language switch
+                {
+                    "ko-kr" => "KR",
+                    "zh-cn" => "CN",
+                    "zh-tw" => "TW"
+                };
+                if (region_str != "")
+                    CC = (CountryCode)Enum.Parse(typeof(CountryCode), region_str);
             }
             string input;
             string output;

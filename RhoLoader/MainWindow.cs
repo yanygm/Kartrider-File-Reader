@@ -13,11 +13,9 @@ using System.Resources;
 using KartLibrary.Xml;
 using KartLibrary.IO;
 using KartLibrary.File;
-
 using RhoLoader.PreviewWindow;
 using RhoLoader.Setting;
 using System.Reflection;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Security.Cryptography;
 
 using RhoLoader.Controls;
@@ -136,6 +134,14 @@ namespace RhoLoader
             BaseSettingLoader.Setting.Language = LanguageManager.LanguageName;
             BaseSettingLoader.SaveSetting("Setting.json");
             LoadLang();
+            string region_str = menu_langname.Text switch
+            {
+                "ko-kr" => "KR",
+                "zh-cn" => "CN",
+                "zh-tw" => "TW"
+            };
+            if (region_str != "")
+                Program.CC = (CountryCode)Enum.Parse(typeof(CountryCode), region_str);
         }
         private void action_openFolder(object sender, EventArgs e)
         {
