@@ -38,22 +38,21 @@ namespace RhoLoader
         [STAThread]
         private static void Main(string[] args)
         {
-            if (File.Exists("Setting.json"))
+            if (!File.Exists("Setting.json"))
+                return;
+            SettingLoader Language = new SettingLoader();
+            using (FileStream file_stream = new FileStream("Setting.json", FileMode.Open))
             {
-                SettingLoader settingLoader = new SettingLoader();
-                using (FileStream file_stream = new FileStream("Setting.json", FileMode.Open))
-                {
-                    settingLoader.Setting = JsonSerializer.Deserialize<RhoLoader.Setting.Setting>(file_stream);
-                }
-                string region_str = settingLoader.Setting.Language switch
-                {
-                    "ko-kr" => "KR",
-                    "zh-cn" => "CN",
-                    "zh-tw" => "TW"
-                };
-                if (region_str != "")
-                    CC = (CountryCode)Enum.Parse(typeof(CountryCode), region_str);
+                Language.Setting = JsonSerializer.Deserialize<RhoLoader.Setting.Setting>(file_stream);
             }
+            string region_str = Language.Setting.Language switch
+            {
+                "ko-kr" => "KR",
+                "zh-cn" => "CN",
+                "zh-tw" => "TW"
+            };
+            if (region_str != "")
+                CC = (CountryCode)Enum.Parse(typeof(CountryCode), region_str);
             string input;
             string output;
             if (args == null || args.Length == 0)
