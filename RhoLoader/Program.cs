@@ -144,25 +144,24 @@ namespace RhoLoader
 
         private static void GetAllFiles(string folderPath, List<string> fileList, RhoFolder folder)
         {
-            // 获取当前目录下的所有文件
             string[] files = Directory.GetFiles(folderPath);
-
-            // 将文件路径添加到文件列表中
             foreach (string file in files)
             {
-                RhoFile item = new RhoFile
+                string extension = Path.GetExtension(file);
+                RhoFile item = new RhoFile();
+                item.DataSource = new FileDataSource(file);
+                item.Name = Path.GetFileName(file);
+                if (extension == ".kml" || extension == ".xml" || extension == ".bml" || extension == ".bmh" || extension == ".bmx" || extension == ".kap" || extension == ".ksv" || extension == ".1s")
                 {
-                    DataSource = new FileDataSource(file),
-                    Name = Path.GetFileName(file),
-                    FileEncryptionProperty = RhoFileProperty.Compressed
-                };
+                    item.FileEncryptionProperty = RhoFileProperty.Compressed;
+                }
+                else
+                {
+                    item.FileEncryptionProperty = RhoFileProperty.PartialEncrypted;
+                }
                 folder.AddFile(item);
             }
-
-            // 获取当前目录下的所有子目录
             string[] subdirectories = Directory.GetDirectories(folderPath);
-
-            // 对每个子目录递归调用
             foreach (string subdirectory in subdirectories)
             {
                 RhoFolder folder2 = new RhoFolder
