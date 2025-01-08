@@ -139,7 +139,8 @@ namespace RhoLoader
             {
                 "ko-kr" => "KR",
                 "zh-cn" => "CN",
-                "zh-tw" => "TW"
+                "zh-tw" => "TW",
+                _ => "CN"
             };
             if (region_str == "KR" || region_str == "CN" || region_str == "TW")
                 Program.CC = (CountryCode)Enum.Parse(typeof(CountryCode), region_str);
