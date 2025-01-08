@@ -151,9 +151,17 @@ namespace RhoLoader
                 RhoFile item = new RhoFile();
                 item.DataSource = new FileDataSource(file);
                 item.Name = Path.GetFileName(file);
-                if (extension == ".kml" || extension == ".xml" || extension == ".bml" || extension == ".bmh" || extension == ".bmx" || extension == ".kap" || extension == ".ksv" || extension == ".1s")
+                if (extension == ".bml" || extension == ".bmh" || extension == ".bmx" || extension == ".kap" || extension == ".ksv" || extension == ".1s" || extension == ".dds")
                 {
                     item.FileEncryptionProperty = RhoFileProperty.Compressed;
+                }
+                else if (extension == ".xml")
+                {
+                    item.FileEncryptionProperty = RhoFileProperty.Encrypted;
+                }
+                else if (extension == ".kml")
+                {
+                    item.FileEncryptionProperty = RhoFileProperty.None;
                 }
                 else
                 {
