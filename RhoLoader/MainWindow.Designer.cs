@@ -78,7 +78,7 @@ namespace RhoLoader
             // 
             menu.BackColor = Color.White;
             menu.Font = new Font("Segoe UI", 9F);
-            menu.Items.AddRange(new ToolStripItem[] { menu_file, menu_extract, menu_about, menu_lang, menumodeToolStripMenuItem });
+            menu.Items.AddRange(new ToolStripItem[] { menu_file, menu_extract, menu_about, menu_lang/*, menumodeToolStripMenuItem*/ });
             menu.Location = new Point(0, 0);
             menu.Name = "menu";
             menu.Padding = new Padding(7, 2, 0, 2);
@@ -91,7 +91,7 @@ namespace RhoLoader
             // menu_file
             // 
             menu_file.BackColor = Color.White;
-            menu_file.DropDownItems.AddRange(new ToolStripItem[] { menu_file_open, menu_file_openFiles, menu_file_openFolder, menuToolStripMenuItem, toolStripSeparator1, menu_file_exit });
+            menu_file.DropDownItems.AddRange(new ToolStripItem[] { menu_file_open/*, menu_file_openFiles*/, menu_file_openFolder/*, menuToolStripMenuItem*/, toolStripSeparator1, menu_file_exit });
             menu_file.ForeColor = Color.Black;
             menu_file.Name = "menu_file";
             menu_file.Size = new Size(71, 20);
@@ -244,7 +244,7 @@ namespace RhoLoader
             // 
             // dialog_multiFile
             // 
-            dialog_multiFile.Filter = "RhoFile|*.Rho|Rho5File|*.Rho5";
+            dialog_multiFile.Filter = "RhoFile|*.Rho";
             dialog_multiFile.Multiselect = true;
             // 
             // imageList_listview
