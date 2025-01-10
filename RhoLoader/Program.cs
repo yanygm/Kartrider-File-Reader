@@ -358,6 +358,7 @@ namespace RhoLoader
             if (xdoc.Root == null)
                 return;
             List<int> childCounts = CountChildren(xdoc.Root, 0, new List<int>());
+            byte[] byteArray;
             using (XmlReader reader = XmlReader.Create(input))
             {
                 using (OutPacket outPacket = new OutPacket())
@@ -385,7 +386,7 @@ namespace RhoLoader
                             reader.MoveToElement();
                         }
                     }
-                    byte[] byteArray = outPacket.ToArray();
+                    byteArray = outPacket.ToArray();
                 }
             }
 
