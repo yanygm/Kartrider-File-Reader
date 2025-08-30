@@ -117,7 +117,7 @@ namespace RhoLoader
                     }
                     else
                     {
-                        Program.encodea(input, output);
+                        //Program.encodea(input, output);
                     }
                 }
             }
