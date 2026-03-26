@@ -1,4 +1,4 @@
-﻿using KartLibrary.Encrypt;
+using KartLibrary.Encrypt;
 using KartLibrary.IO;
 using System;
 using System.Collections;
@@ -371,6 +371,7 @@ namespace KartLibrary.File
             }
             outFileStream.Close();
             _rhoStream = new FileStream(fullName, FileMode.Open);
+            _closed = false; // 设置为false，表示文件已打开
 
             // send applied changes event to RhoFolder instances
             Queue<RhoFolder> folderQueue = new Queue<RhoFolder>();
@@ -460,15 +461,15 @@ namespace KartLibrary.File
             byte[] folderData;
 
             Queue<DataSavingInfo> fileSavingInfoQueue = new Queue<DataSavingInfo>();
+            List<RhoFolder> subFoldersList = new List<RhoFolder>(folder.Folders);
 
-            // Encode folder
+            // Encode folder metadata (without writing yet)
             using (MemoryStream memStream = new MemoryStream())
             {
                 BinaryWriter memWriter = new BinaryWriter(memStream);
-                IReadOnlyCollection<RhoFolder> subFolders = folder.Folders;
                 IReadOnlyCollection<RhoFile> subFiles = folder.Files;
-                memWriter.Write(subFolders.Count);
-                foreach (RhoFolder subFolder in subFolders)
+                memWriter.Write(subFoldersList.Count);
+                foreach (RhoFolder subFolder in subFoldersList)
                 {
                     uint subFolderDataIndex = subFolder.getFolderDataIndex();
                     memWriter.WriteNullTerminatedText(subFolder.Name, true);
@@ -501,12 +502,16 @@ namespace KartLibrary.File
                     }
                     if (subFile.FileEncryptionProperty == RhoFileProperty.CompressedEncrypted || subFile.FileEncryptionProperty == RhoFileProperty.Compressed)
                     {
-                        using MemoryStream ms = new MemoryStream();
-                        using (var compressStream = new Ionic.Zlib.ZlibStream(ms, Ionic.Zlib.CompressionMode.Compress, Ionic.Zlib.CompressionLevel.BestCompression, true))
+                        byte[] compressedData;
+                        using (MemoryStream ms = new MemoryStream())
                         {
-                            compressStream.Write(fileData, 0, fileData.Length);
+                            using (var compressStream = new Ionic.Zlib.ZlibStream(ms, Ionic.Zlib.CompressionMode.Compress, Ionic.Zlib.CompressionLevel.BestCompression, true))
+                            {
+                                compressStream.Write(fileData, 0, fileData.Length);
+                            }
+                            compressedData = ms.ToArray();
                         }
-                        fileData = ms.ToArray();
+                        fileData = compressedData;
                     }
 
                     memWriter.WriteNullTerminatedText(subFile.NameWithoutExt, true);
@@ -572,6 +577,20 @@ namespace KartLibrary.File
                 folderData = memStream.ToArray();
             }
 
+            // First process all files in current folder
+            while (fileSavingInfoQueue.Count > 0)
+            {
+                DataSavingInfo fileSavingInfo = fileSavingInfoQueue.Dequeue();
+                fileSavingInfo.DataInfo.Offset = dataOffset;
+                savingInfo.Enqueue(fileSavingInfo);
+                dataOffset = (dataOffset + fileSavingInfo.DataInfo.DataSize + 0xFF) & 0x7FFFFF00;
+            }
+
+            // Then process all subfolders
+            foreach (RhoFolder subFolder in subFoldersList)
+                storeFolderAndFiles(subFolder, savingInfo, usedIndex, ref dataOffset, outRhoKey);
+
+            // Finally process current folder metadata
             uint folderDataDecChksum = Adler.Adler32(0, folderData, 0, folderData.Length);
             uint folderKey = RhoKey.GetDirectoryDataKey(outRhoKey);
             RhoEncrypt.EncryptData(folderKey, folderData, 0, folderData.Length);
@@ -587,15 +606,6 @@ namespace KartLibrary.File
             usedIndex.Add(folderDataIndex);
             savingInfo.Enqueue(folderSavingInfo);
             dataOffset = (dataOffset + folderSavingInfo.DataInfo.DataSize + 0xFF) & 0x7FFFFF00;
-            foreach (RhoFolder subFolder in folder.Folders)
-                storeFolderAndFiles(subFolder, savingInfo, usedIndex, ref dataOffset, outRhoKey);
-            while (fileSavingInfoQueue.Count > 0)
-            {
-                DataSavingInfo fileSavingInfo = fileSavingInfoQueue.Dequeue();
-                fileSavingInfo.DataInfo.Offset = dataOffset;
-                savingInfo.Enqueue(fileSavingInfo);
-                dataOffset = (dataOffset + fileSavingInfo.DataInfo.DataSize + 0xFF) & 0x7FFFFF00;
-            }
         }
 
         private void releaseAllHandlers()
