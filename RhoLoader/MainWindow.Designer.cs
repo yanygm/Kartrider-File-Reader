@@ -1,4 +1,4 @@
-﻿using RhoLoader.Controls;
+using RhoLoader.Controls;
 
 namespace RhoLoader
 {

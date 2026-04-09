@@ -33,6 +33,9 @@ namespace RhoLoader
 
         private PackFolderInfo _cur_folder;
 
+        private int _sortColumn = 0;
+        private bool _sortAscending = true;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -44,6 +47,7 @@ namespace RhoLoader
             listview_main.SmallImageList = imageList_listview;
             listview_main.SmallImageList.Images.Add("file", new Bitmap(global::RhoLoader.Resource.baseline_insert_drive_file_black_18dp));
             listview_main.SmallImageList.Images.Add("folder", new Bitmap(global::RhoLoader.Resource.folder_close));
+            listview_main.ColumnClick += action_listview_columnclick;
         }
         public MainWindow(StartupOption startupOption) : this()
         {
@@ -307,6 +311,81 @@ namespace RhoLoader
                 filemenu_convertXML.Enabled = false;
             }
         }
+        private void action_listview_columnclick(object sender, ColumnClickEventArgs e)
+        {
+            if (e.Column == _sortColumn)
+            {
+                _sortAscending = !_sortAscending;
+            }
+            else
+            {
+                _sortColumn = e.Column;
+                _sortAscending = true;
+            }
+            List<ListViewItem> folderItems = new List<ListViewItem>();
+            List<ListViewItem> fileItems = new List<ListViewItem>();
+            foreach (ListViewItem item in listview_main.Items)
+            {
+                if (item.Tag is PackFolderInfo)
+                    folderItems.Add(item);
+                else
+                    fileItems.Add(item);
+            }
+            folderItems.Sort((x, y) =>
+            {
+                int result = string.Compare(x.Text, y.Text, StringComparison.OrdinalIgnoreCase);
+                return _sortAscending ? result : -result;
+            });
+            fileItems.Sort((x, y) =>
+            {
+                int result = 0;
+                switch (_sortColumn)
+                {
+                    case 0:
+                        result = string.Compare(x.Text, y.Text, StringComparison.OrdinalIgnoreCase);
+                        break;
+                    case 1:
+                        result = string.Compare(x.SubItems[1].Text, y.SubItems[1].Text, StringComparison.OrdinalIgnoreCase);
+                        break;
+                    case 2:
+                        double numX = ParseFileSize(x.SubItems[2].Text);
+                        double numY = ParseFileSize(y.SubItems[2].Text);
+                        result = numX.CompareTo(numY);
+                        break;
+                }
+                return _sortAscending ? result : -result;
+            });
+            listview_main.Items.Clear();
+            listview_main.Items.AddRange(folderItems.ToArray());
+            listview_main.Items.AddRange(fileItems.ToArray());
+        }
+        private double ParseFileSize(string sizeStr)
+        {
+            if (string.IsNullOrEmpty(sizeStr))
+                return 0;
+            string trimmed = sizeStr.Trim();
+            double multiplier = 1;
+            if (trimmed.EndsWith("MiB"))
+            {
+                multiplier = 1024 * 1024;
+                trimmed = trimmed.Substring(0, trimmed.Length - 3).Trim();
+            }
+            else if (trimmed.EndsWith("KiB"))
+            {
+                multiplier = 1024;
+                trimmed = trimmed.Substring(0, trimmed.Length - 3).Trim();
+            }
+            else if (trimmed.EndsWith("Bytes"))
+            {
+                multiplier = 1;
+                trimmed = trimmed.Substring(0, trimmed.Length - 5).Trim();
+            }
+            if (double.TryParse(trimmed, out double value))
+            {
+                return value * multiplier;
+            }
+            return 0;
+        }
         private void action_listview_doubleclick(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left || listview_main.SelectedItems.Count == 0)
@@ -561,7 +640,8 @@ namespace RhoLoader
             }
             foreach (PackFileInfo sub_file in _cur_folder.GetFilesInfo())
             {
-                ListViewItem lvi = new ListViewItem(new string[] { sub_file.FileName, ("listview_item2_file").GetStringBag(), $"{FormatDataLength(sub_file.FileSize)}" });
+                string ext = Path.GetExtension(sub_file.FileName);
+                ListViewItem lvi = new ListViewItem(new string[] { sub_file.FileName, string.IsNullOrEmpty(ext) ? "" : ext.Substring(1), $"{FormatDataLength(sub_file.FileSize)}" });
                 lvi.ImageKey = "file";
                 lvi.Tag = sub_file;
                 temp_list.Add(lvi);
