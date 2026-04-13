@@ -203,7 +203,7 @@ namespace RhoLoader
             if (dialog_singleFile.ShowDialog() == DialogResult.OK)
             {
                 CloseCurrentFile();
-                BaseFolderManager.OpenSingleFile(Program.CC, dialog_singleFile.FileName);
+                BaseFolderManager.OpenSingleFile(dialog_singleFile.FileName, Program.CC);
                 Queue<PackFolderInfo> folderQueue = new Queue<PackFolderInfo>();
                 Queue<TreeNode> nodeQueue = new Queue<TreeNode>();
                 PackFolderInfo[] rootFolders = BaseFolderManager.GetDirectories("");
