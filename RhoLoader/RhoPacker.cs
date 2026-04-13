@@ -28,7 +28,7 @@ internal static class RhoPacker
         {
             if (arg.EndsWith(".rho") || arg.EndsWith(".rho5"))
             {
-                decode(arg, arg, CC);
+                decode(arg, CC);
             }
             else if (arg.EndsWith("aaa.xml"))
             {
@@ -53,7 +53,7 @@ internal static class RhoPacker
                 var temp = Directory.GetDirectories(arg);
                 if (temp.All(dir => datapack.Contains(Path.GetFileName(dir))) && temp.Length != 0)
                 {
-                    encode(arg, arg, CC);
+                    encode(arg, CC);
                 }
                 else
                 {
@@ -64,7 +64,7 @@ internal static class RhoPacker
                     }
                     else
                     {
-                        encodea(arg, arg);
+                        encodea(arg);
                         var parent = Path.GetDirectoryName(arg);
                         files = Directory.GetFiles(parent, "*.rho");
                     }
@@ -73,8 +73,9 @@ internal static class RhoPacker
         }
     }
 
-    private static void encodea(string input, string output)
+    private static void encodea(string input)
     {
+        string output = input;
         if (!output.EndsWith(".rho"))
             output += ".rho";
 
@@ -120,8 +121,9 @@ internal static class RhoPacker
         }
     }
 
-    private static void encode(string input, string output, CountryCode CC)
+    private static void encode(string input, CountryCode CC)
     {
+        string output = input;
         var rho5Archive = new Rho5Archive();
         if (!output.EndsWith(".rho5"))
             output += ".rho5";
@@ -147,8 +149,9 @@ internal static class RhoPacker
         }
     }
 
-    private static void decode(string input, string output, CountryCode CC)
+    private static void decode(string input, CountryCode CC)
     {
+        string output = input;
         if (output.EndsWith(".rho"))
             output = output.Replace(".rho", "");
         if (output.EndsWith(".rho5"))
