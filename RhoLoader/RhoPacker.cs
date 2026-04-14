@@ -100,7 +100,7 @@ internal static class RhoPacker
             RhoFile item = new RhoFile();
             item.DataSource = new FileDataSource(file.FullName);
             item.Name = file.Name;
-            item.FileEncryptionProperty = GetFileTypeByExtension(extension, fileSize);
+            item.FileEncryptionProperty = GetFileTypeByExtension(extension);
             folder.AddFile(item);
         }
 
