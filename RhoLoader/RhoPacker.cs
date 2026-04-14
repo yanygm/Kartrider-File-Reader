@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,8 +64,6 @@ internal static class RhoPacker
                     else
                     {
                         encodea(arg);
-                        var parent = Path.GetDirectoryName(arg);
-                        files = Directory.GetFiles(parent, "*.rho");
                     }
                 }
             }
@@ -103,7 +100,7 @@ internal static class RhoPacker
             RhoFile item = new RhoFile();
             item.DataSource = new FileDataSource(file.FullName);
             item.Name = file.Name;
-            item.FileEncryptionProperty = GetRhoFilePropertyByExtension(extension, fileSize);
+            item.FileEncryptionProperty = GetFileTypeByExtension(extension, fileSize);
             folder.AddFile(item);
         }
 
@@ -488,7 +485,7 @@ internal static class RhoPacker
         }
     }
 
-    private static int GetFileTypeByExtension(string ext, int fileSize)
+    private static RhoFileProperty GetFileTypeByExtension(string ext)
     {
         switch (ext.ToLower())
         {
@@ -501,40 +498,19 @@ internal static class RhoPacker
             case ".hdr":
             case ".fft":
             case ".wav":
-                return 1;
+                return RhoFileProperty.Compressed;
             case ".uset":
             case ".xml":
-                return 3;
+                return RhoFileProperty.Encrypted;
             case ".png":
-                return (fileSize <= 256) ? 4 : 5;
+                return RhoFileProperty.PartialEncrypted;
             case ".kap":
             case ".ogg":
             case ".jpg":
             case ".flac":
             case ".ksv":
-                return 5;
+                return RhoFileProperty.PartialEncrypted;
             case ".bml":
-                return 6;
-            default:
-                Console.WriteLine("Warning: unknown extension: " + ext);
-                return 1;
-        }
-    }
-
-    private static RhoFileProperty GetRhoFilePropertyByExtension(string ext, int fileSize)
-    {
-        int fileType = GetFileTypeByExtension(ext, fileSize);
-        switch (fileType)
-        {
-            case 1:
-                return RhoFileProperty.Compressed;
-            case 3:
-                return RhoFileProperty.Encrypted;
-            case 4:
-                return RhoFileProperty.PartialEncrypted;
-            case 5:
-                return RhoFileProperty.PartialEncrypted;
-            case 6:
                 return RhoFileProperty.CompressedEncrypted;
             default:
                 return RhoFileProperty.None;
