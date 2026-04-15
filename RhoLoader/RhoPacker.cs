@@ -100,7 +100,7 @@ internal static class RhoPacker
             RhoFile item = new RhoFile();
             item.DataSource = new FileDataSource(file.FullName);
             item.Name = file.Name;
-            item.FileEncryptionProperty = GetFileTypeByExtension(extension);
+            item.FileEncryptionProperty = GetFileTypeByExtension(extension, fileSize);
             folder.AddFile(item);
         }
 
@@ -485,7 +485,7 @@ internal static class RhoPacker
         }
     }
 
-    private static RhoFileProperty GetFileTypeByExtension(string ext)
+    private static RhoFileProperty GetFileTypeByExtension(string ext, int fileSize)
     {
         switch (ext.ToLower())
         {
@@ -503,7 +503,7 @@ internal static class RhoPacker
             case ".xml":
                 return RhoFileProperty.Encrypted;
             case ".png":
-                return RhoFileProperty.PartialEncrypted;
+                return (fileSize <= 256) ? RhoFileProperty.Encrypted : RhoFileProperty.PartialEncrypted;
             case ".kap":
             case ".ogg":
             case ".jpg":
