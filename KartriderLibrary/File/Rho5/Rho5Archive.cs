@@ -312,6 +312,7 @@ namespace KartLibrary.File
                 byte[] processedData;
                 byte[] fileChksum = MD5.HashData(data);
                 byte[] encryptKey = Rho5Key.GetPackedFileKey(fileChksum, Rho5Key.GetFileKey_U1(mixingStr), file.FullName);
+                // 压缩数据
                 using (MemoryStream memStream = new MemoryStream())
                 {
                     Ionic.Zlib.ZlibStream compressStream = new Ionic.Zlib.ZlibStream(memStream, Ionic.Zlib.CompressionMode.Compress, true);
@@ -319,12 +320,20 @@ namespace KartLibrary.File
                     compressStream.Flush();
                     compressStream.Close();
                     processedData = memStream.ToArray();
-                    Rho5EncryptStream encryptStream = new Rho5EncryptStream(memStream, encryptKey);
-                    encryptStream.Seek(0, SeekOrigin.Begin);
-                    encryptStream.Write(processedData, 0, Math.Min(processedData.Length, 0x400));
-                    encryptStream.Flush();
-                    processedData = memStream.ToArray();
                 }
+                // 计算加密后的数据：前 0x400 字节加密，后续为明文
+                int encryptedPartLen = Math.Min(processedData.Length, 0x400);
+                byte[] finalData = new byte[encryptedPartLen + (processedData.Length - encryptedPartLen)];
+                // 前 0x400 字节加密
+                Rho5EncryptStream encryptStream = new Rho5EncryptStream(new MemoryStream(finalData, 0, encryptedPartLen, true, true), encryptKey);
+                encryptStream.Write(processedData, 0, encryptedPartLen);
+                encryptStream.Flush();
+                // 后续字节为明文
+                if (processedData.Length > 0x400)
+                {
+                    Array.Copy(processedData, 0x400, finalData, 0x400, processedData.Length - 0x400);
+                }
+                processedData = finalData;
                 int fileInfoChksum = 7 + ((dataOffset - dataBeginOffset) >> 10) + data.Length + processedData.Length;
                 byte[] array = fileChksum;
                 foreach (byte b in array)
