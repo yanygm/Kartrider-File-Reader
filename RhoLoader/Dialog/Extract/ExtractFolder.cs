@@ -126,7 +126,10 @@ namespace RhoLoader
                     return;
                 }
                 (string relative_path, PackFolderInfo folder) cur_proc_obj = extend_queue.Dequeue();
-                string out_path = $"{_extract_path}{cur_proc_obj.relative_path}";
+                string out_path = $"{_extract_path}\\DataRaw{cur_proc_obj.relative_path}";
+                // Create directory for this folder (including empty ones)
+                if (!Directory.Exists(out_path))
+                    Directory.CreateDirectory(out_path);
                 foreach (PackFolderInfo sub_folder in cur_proc_obj.folder.GetFoldersInfo())
                 {
                     extend_queue.Enqueue(($"{cur_proc_obj.relative_path}\\{sub_folder.FolderName}", sub_folder));
@@ -176,9 +179,7 @@ namespace RhoLoader
                 }
                 ExtractInfo extract_info = file_queue.Dequeue();
                 ReportProgress(extract_info.FileInfo.FullName, _totalFiles - file_queue.Count);
-                string filePath = extract_info.FileInfo.PackFileType == PackFileType.RhoFile
-                    ? $"_rhoOut{extract_info.RelativePath}"
-                    : $"_rho5Out{extract_info.RelativePath}";
+                string filePath = $"DataRaw{extract_info.RelativePath}";
                 filePath = filePath.Replace("/", "\\");
                 string[] pathSp = filePath.Split('\\');
                 string tmpStr = "";
@@ -189,9 +190,7 @@ namespace RhoLoader
                         Directory.CreateDirectory($"{_extract_path}\\{tmpStr}");
                 }
                 FileStream out_fs = new FileStream(
-                    extract_info.FileInfo.PackFileType == PackFileType.RhoFile 
-                    ? $"{_extract_path}\\_rhoOut{extract_info.RelativePath}\\{extract_info.Out_filename}"
-                    : $"{_extract_path}\\_rho5Out{extract_info.RelativePath}\\{extract_info.Out_filename}"
+                    $"{_extract_path}\\DataRaw{extract_info.RelativePath}\\{extract_info.Out_filename}"
                     , FileMode.Create);
                 byte[] file_data = extract_info.FileInfo.GetData();
                 try
