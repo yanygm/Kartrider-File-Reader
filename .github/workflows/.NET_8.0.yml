@@ -35,7 +35,7 @@ jobs:
       with:
         tag: ${{ steps.date.outputs.date }}
         name: RhoLoader
-        artifacts: "PublishedWinExe/RhoLoader.zip"
+        artifacts: "PublishedWinExe"
         allowUpdates: true
         replacesArtifacts: true
         token: ${{ secrets.GITHUB_TOKEN }}
