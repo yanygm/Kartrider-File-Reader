@@ -100,11 +100,10 @@ internal static class RhoPacker
     /// <summary>
     /// 把目录封成 LPK v4 分包。包内路径为相对该目录的路径（保留 kart_ / zeta / ... 等顶层目录），
     /// 与 <see cref="LpkFolderManager"/> 读取 Data 目录时建立的目录树一致。
-    /// 输出文件名沿用 rho5 的规则：<c>&lt;输入目录&gt;.lpk</c>。
+    /// 输出文件名与 rho5 走同一套规则：<c>&lt;包名&gt;_&lt;分包号:5 位&gt;.lpk</c>。
     /// </summary>
     private static void encodeLpk(string input)
     {
-        string output = input.EndsWith(".lpk", StringComparison.OrdinalIgnoreCase) ? input : input + ".lpk";
         string root = Path.GetFullPath(input)
             .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         if (!Directory.Exists(root))
@@ -112,6 +111,11 @@ internal static class RhoPacker
             Console.WriteLine($"路径不存在：{input}");
             return;
         }
+
+        // 与 rho5 封包完全相同：目录名按 "_" 拆成包名 + 分包号，
+        // 没有分包号时按 0 处理，最终形如 DataPack9_00000.lpk。
+        string output = Path.Combine(Path.GetDirectoryName(root) ?? "",
+            BuildPackFileName(Path.GetFileName(root), "lpk"));
 
         var entries = new List<LpkV4.LpkEntry>();
         CollectLpkEntries(root, root, entries);
@@ -168,6 +172,30 @@ internal static class RhoPacker
         return string.Equals(packFormat, "lpk", StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <summary>
+    /// 分包名解析（rho5 / lpk 共用）：<c>DataPack9</c> → ("DataPack9", 0)，
+    /// <c>DataPack9_00040</c> → ("DataPack9", 40)。
+    /// </summary>
+    private static (string dataPackName, int dataPackID) ParsePackName(string nameWithoutExtension)
+    {
+        string[] strArray = nameWithoutExtension.Split('_');
+        string dataPackName = strArray[0];
+        int dataPackID = 0;
+        if (strArray.Length == 2)
+            dataPackID = Convert.ToInt32(strArray[1]);
+        return (dataPackName, dataPackID);
+    }
+
+    /// <summary>
+    /// 生成分包文件名，格式与 <c>Rho5Archive.getDataPackFilePath</c> 相同：
+    /// <c>&lt;包名&gt;_&lt;分包号:00000&gt;.&lt;扩展名&gt;</c>。
+    /// </summary>
+    private static string BuildPackFileName(string nameWithoutExtension, string extension)
+    {
+        var (dataPackName, dataPackID) = ParsePackName(nameWithoutExtension);
+        return $"{dataPackName}_{dataPackID:00000}.{extension}";
+    }
+
     private static void GetAllFiles(string folderPath, RhoFolder folder)
     {
         DirectoryInfo dirInfo = new DirectoryInfo(folderPath);
@@ -217,11 +245,7 @@ internal static class RhoPacker
             var fullName = fileInfo.Directory.FullName;
             if (!Directory.Exists(fullName))
                 Directory.CreateDirectory(fullName);
-            var strArray = fileInfo.Name.Replace(".rho5", "").Split("_");
-            var dataPackName = strArray[0];
-            var dataPackID = 0;
-            if (strArray.Length == 2)
-                dataPackID = Convert.ToInt32(strArray[1]);
+            var (dataPackName, dataPackID) = ParsePackName(Path.GetFileNameWithoutExtension(fileInfo.Name));
             input = input.Replace("\\", "/");
             if (!input.EndsWith("/"))
                 input += "/";
