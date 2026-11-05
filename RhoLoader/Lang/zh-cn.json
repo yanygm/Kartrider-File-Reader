@@ -61,6 +61,10 @@
       "Value": "类型"
     },
     {
+      "Name": "col_source",
+      "Value": "所属封包"
+    },
+    {
       "Name": "listview_item2_file",
       "Value": "文件"
     },

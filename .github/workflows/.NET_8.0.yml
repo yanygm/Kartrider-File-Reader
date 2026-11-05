@@ -3,6 +3,9 @@ name: .NET 8.0
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,10 +24,18 @@ jobs:
       run: dotnet build -c Release RhoLoader/RhoLoader.csproj
 
     - name: Publish
-      run: dotnet publish -p:PublishProfile="RhoLoader/Properties/PublishProfiles/x64 version.pubxml" -c Release RhoLoader/RhoLoader.csproj
+      run: dotnet publish -p:PublishProfile="RhoLoader/Properties/PublishProfiles/x64 version.pubxml" -o PublishedWinExe -c Release RhoLoader/RhoLoader.csproj
 
-    - name: Archive Artifacts
-      uses: actions/upload-artifact@v7
+    - name: Get current date
+      id: date
+      run: echo "date=$(date +%y%m%d)" >> $GITHUB_OUTPUT
+
+    - name: Publish to GitHub Releases
+      uses: ncipollo/release-action@v1
       with:
+        tag: ${{ steps.date.outputs.date }}
         name: RhoLoader
-        path: RhoLoader/bin/Release/net8.0-windows/win-x64/publish/
+        artifacts: "PublishedWinExe/RhoLoader.zip"
+        allowUpdates: true
+        replacesArtifacts: true
+        token: ${{ secrets.GITHUB_TOKEN }}

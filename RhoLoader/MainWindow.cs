@@ -74,6 +74,7 @@ namespace RhoLoader
             this.columnHeader1.Text = ((string)this.columnHeader1.Tag).GetStringBag();
             this.columnHeader2.Text = ((string)this.columnHeader2.Tag).GetStringBag();
             this.columnHeader3.Text = ((string)this.columnHeader3.Tag).GetStringBag();
+            this.columnHeader4.Text = ((string)this.columnHeader4.Tag).GetStringBag();
             this.Text = ((string)this.Tag).GetStringBag();
             this.menu_lang.Text = ((string)this.menu_lang.Tag).GetStringBag();
             this.menu_packformat.Text = ((string)this.menu_packformat.Tag).GetStringBag();
@@ -354,6 +355,9 @@ namespace RhoLoader
                         double numX = ParseFileSize(x.SubItems[2].Text);
                         double numY = ParseFileSize(y.SubItems[2].Text);
                         result = numX.CompareTo(numY);
+                        break;
+                    case 3:
+                        result = string.Compare(x.SubItems[3].Text, y.SubItems[3].Text, StringComparison.OrdinalIgnoreCase);
                         break;
                 }
                 return _sortAscending ? result : -result;
@@ -636,7 +640,7 @@ namespace RhoLoader
             this.listview_main.Items.Clear();
             foreach (PackFolderInfo sub_folder in _cur_folder.GetFoldersInfo())
             {
-                ListViewItem lvi = new ListViewItem(new string[] { sub_folder.FolderName, ("listview_item2_folder").GetStringBag(), $"" });
+                ListViewItem lvi = new ListViewItem(new string[] { sub_folder.FolderName, ("listview_item2_folder").GetStringBag(), "", "" });
                 lvi.ImageKey = "folder";
                 lvi.Tag = sub_folder;
                 temp_list.Add(lvi);
@@ -644,7 +648,7 @@ namespace RhoLoader
             foreach (PackFileInfo sub_file in _cur_folder.GetFilesInfo())
             {
                 string ext = Path.GetExtension(sub_file.FileName);
-                ListViewItem lvi = new ListViewItem(new string[] { sub_file.FileName, string.IsNullOrEmpty(ext) ? "" : ext.Substring(1), $"{FormatDataLength(sub_file.FileSize)}" });
+                ListViewItem lvi = new ListViewItem(new string[] { sub_file.FileName, string.IsNullOrEmpty(ext) ? "" : ext.Substring(1), $"{FormatDataLength(sub_file.FileSize)}", sub_file.SourceFileName });
                 lvi.ImageKey = "file";
                 lvi.Tag = sub_file;
                 temp_list.Add(lvi);

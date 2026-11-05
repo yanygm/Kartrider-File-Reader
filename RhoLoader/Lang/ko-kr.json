@@ -61,6 +61,10 @@
       "Value": "타입"
     },
     {
+      "Name": "col_source",
+      "Value": "소속 패키지"
+    },
+    {
       "Name": "listview_item2_file",
       "Value": "파일"
     },

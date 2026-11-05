@@ -303,6 +303,7 @@ namespace KartLibrary.File.Lpk
                 FileName = fileName,
                 FullName = fullName,
                 FileSize = fileInfo.FileSize,
+                SourceFileName = Path.GetFileName(lpkPath),
                 PackFileType = PackFileType.LpkFile,
                 OriginalFile = fileInfo
             });

@@ -54,6 +54,7 @@ namespace RhoLoader
             columnHeader1 = new ColumnHeader();
             columnHeader3 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();
+            columnHeader4 = new ColumnHeader();
             dialog_singleFile = new OpenFileDialog();
             dialog_multiFile = new OpenFileDialog();
             imageList_listview = new ImageList(components);
@@ -232,7 +233,7 @@ namespace RhoLoader
             listview_main.AllowDrop = true;
             listview_main.BackColor = Color.White;
             listview_main.BorderStyle = BorderStyle.None;
-            listview_main.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader3, columnHeader2 });
+            listview_main.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader3, columnHeader2, columnHeader4 });
             listview_main.Dock = DockStyle.Fill;
             listview_main.Font = new Font("Microsoft YaHei", 8.25F);
             listview_main.FullRowSelect = true;
@@ -264,6 +265,12 @@ namespace RhoLoader
             columnHeader2.Text = "col_size";
             columnHeader2.TextAlign = HorizontalAlignment.Right;
             columnHeader2.Width = 75;
+            // 
+            // columnHeader4
+            // 
+            columnHeader4.Tag = "col_source";
+            columnHeader4.Text = "col_source";
+            columnHeader4.Width = 140;
             // 
             // dialog_singleFile
             // 
@@ -430,6 +437,7 @@ namespace RhoLoader
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ToolStripMenuItem menu_about;
         private System.Windows.Forms.ImageList imageList_listview;
         private System.Windows.Forms.ToolStripMenuItem menu_extract;

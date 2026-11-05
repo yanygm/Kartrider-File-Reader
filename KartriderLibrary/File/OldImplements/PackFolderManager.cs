@@ -132,6 +132,7 @@ namespace KartLibrary.File
                                 {
                                     FileName = file.FullFileName,
                                     FileSize = file.FileSize,
+                                    SourceFileName = Path.GetFileName(fileName),
                                     FullName = $"{currectPackFolder.FullName}/{file.FullFileName}",
                                     OriginalFile = file,
                                     PackFileType = PackFileType.RhoFile
@@ -187,6 +188,7 @@ namespace KartLibrary.File
                             {
                                 FileName = part,
                                 FileSize = rho5FileInfo.DecompressedSize,
+                                SourceFileName = Path.GetFileName(file),
                                 FullName = currentFolder.FullName == "" ? part : $"{currentFolder.FullName}/{part}",
                                 PackFileType = PackFileType.Rho5File,
                                 OriginalFile = rho5FileInfo
@@ -255,6 +257,7 @@ namespace KartLibrary.File
                     {
                         FileName = file.FullFileName,
                         FileSize = file.FileSize,
+                        SourceFileName = fileInfo.Name,
                         FullName = $"{currectPackFolder.FullName}/{file.FullFileName}",
                         OriginalFile = file,
                         PackFileType = PackFileType.RhoFile
@@ -304,6 +307,7 @@ namespace KartLibrary.File
                         {
                             FileName = part,
                             FileSize = rho5FileInfo.DecompressedSize,
+                            SourceFileName = Path.GetFileName(file),
                             FullName = ((packFolderInfo.FullName == "") ? part : (packFolderInfo.FullName + "/" + part)),
                             PackFileType = PackFileType.Rho5File,
                             OriginalFile = rho5FileInfo
@@ -368,6 +372,7 @@ namespace KartLibrary.File
                         {
                             FileName = file.FullFileName,
                             FileSize = file.FileSize,
+                            SourceFileName = fileInfo.Name,
                             FullName = $"{currectPackFolder.FullName}/{file.FullFileName}",
                             OriginalFile = file,
                             PackFileType = PackFileType.RhoFile
@@ -596,6 +601,7 @@ namespace KartLibrary.File
         public string FileName { get; set; }
         public string FullName { get; set; }
         public int FileSize { get; set; }
+        public string SourceFileName { get; set; } = "";
         public PackFileType PackFileType { get; set; }
         public object OriginalFile { get; set; }
 
@@ -623,6 +629,7 @@ namespace KartLibrary.File
                 FileName = FileName,
                 FullName = FullName,
                 FileSize = FileSize,
+                SourceFileName = SourceFileName,
                 PackFileType = PackFileType,
                 OriginalFile = OriginalFile,
             };

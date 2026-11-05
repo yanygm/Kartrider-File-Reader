@@ -65,6 +65,10 @@
       "Value": "Type"
     },
     {
+      "Name": "col_source",
+      "Value": "Source Pack"
+    },
+    {
       "Name": "listview_item2_file",
       "Value": "File"
     },
