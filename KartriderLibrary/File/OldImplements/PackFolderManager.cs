@@ -12,7 +12,7 @@ using KartLibrary.Consts;
 namespace KartLibrary.File
 {
     [Obsolete("PackFolderManager class is deprecated. Use RhoStorageSystem instead.")]
-    public class PackFolderManager
+    public class PackFolderManager : IPackFolderManager
     {
         public bool Initizated { get; private set; } = false;
         public CountryCode regionCode = CountryCode.None;
@@ -609,6 +609,10 @@ namespace KartLibrary.File
             {
                 return file5Info.GetData();
             }
+            else if (PackFileType == PackFileType.LpkFile && OriginalFile is Lpk.LpkFileInfo lpkFileInfo)
+            {
+                return lpkFileInfo.GetData();
+            }
             else
                 return null;
         }
@@ -657,6 +661,8 @@ namespace KartLibrary.File
     public enum PackFileType
     {
         RhoFile,
-        Rho5File
+        Rho5File,
+        /// <summary>LPK 分包中的文件（<see cref="PackFileInfo.OriginalFile"/> 为 <see cref="Lpk.LpkFileInfo"/>）。</summary>
+        LpkFile
     }
 }

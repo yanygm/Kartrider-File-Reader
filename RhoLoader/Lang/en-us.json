@@ -45,6 +45,10 @@
       "Value": "Languages"
     },
     {
+      "Name": "menu_packformat",
+      "Value": "Pack Format"
+    },
+    {
       "Name": "menu_about",
       "Value": "About"
     },

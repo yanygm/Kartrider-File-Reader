@@ -46,6 +46,9 @@ namespace RhoLoader
             menu_extract_current = new ToolStripMenuItem();
             menu_about = new ToolStripMenuItem();
             menu_lang = new ToolStripMenuItem();
+            menu_packformat = new ToolStripMenuItem();
+            menu_packformat_rho5 = new ToolStripMenuItem();
+            menu_packformat_lpk = new ToolStripMenuItem();
             menumodeToolStripMenuItem = new ToolStripMenuItem();
             listview_main = new ListView();
             columnHeader1 = new ColumnHeader();
@@ -78,7 +81,7 @@ namespace RhoLoader
             // 
             menu.BackColor = Color.White;
             menu.Font = new Font("Segoe UI", 9F);
-            menu.Items.AddRange(new ToolStripItem[] { menu_file, menu_extract, menu_about, menu_lang/*, menumodeToolStripMenuItem*/ });
+            menu.Items.AddRange(new ToolStripItem[] { menu_file, menu_extract, menu_about, menu_lang, menu_packformat/*, menumodeToolStripMenuItem*/ });
             menu.Location = new Point(0, 0);
             menu.Name = "menu";
             menu.Padding = new Padding(7, 2, 0, 2);
@@ -193,6 +196,30 @@ namespace RhoLoader
             menu_lang.Tag = "menu_Languages";
             menu_lang.Text = "menu_Languages";
             // 
+            // menu_packformat
+            // 
+            menu_packformat.BackColor = Color.White;
+            menu_packformat.DropDownItems.AddRange(new ToolStripItem[] { menu_packformat_rho5, menu_packformat_lpk });
+            menu_packformat.ForeColor = Color.Black;
+            menu_packformat.Name = "menu_packformat";
+            menu_packformat.Size = new Size(112, 20);
+            menu_packformat.Tag = "menu_packformat";
+            menu_packformat.Text = "menu_packformat";
+            // 
+            // menu_packformat_rho5
+            // 
+            menu_packformat_rho5.Name = "menu_packformat_rho5";
+            menu_packformat_rho5.Size = new Size(120, 22);
+            menu_packformat_rho5.Text = "rho5 (.rho5)";
+            menu_packformat_rho5.Click += action_changePackFormat;
+            // 
+            // menu_packformat_lpk
+            // 
+            menu_packformat_lpk.Name = "menu_packformat_lpk";
+            menu_packformat_lpk.Size = new Size(120, 22);
+            menu_packformat_lpk.Text = "lpk (.lpk)";
+            menu_packformat_lpk.Click += action_changePackFormat;
+            // 
             // menumodeToolStripMenuItem
             // 
             menumodeToolStripMenuItem.BackColor = Color.DarkGray;
@@ -240,11 +267,11 @@ namespace RhoLoader
             // 
             // dialog_singleFile
             // 
-            dialog_singleFile.Filter = "RhoFile|*.Rho|Rho5File|*.Rho5|Nho|*.nho";
+            dialog_singleFile.Filter = "RhoFile|*.Rho|Rho5File|*.Rho5|LpkFile|*.lpk|Nho|*.nho";
             // 
             // dialog_multiFile
             // 
-            dialog_multiFile.Filter = "RhoFile|*.Rho";
+            dialog_multiFile.Filter = "PackFile|*.Rho;*.lpk|RhoFile|*.Rho|LpkFile|*.lpk";
             dialog_multiFile.Multiselect = true;
             // 
             // imageList_listview
@@ -408,6 +435,9 @@ namespace RhoLoader
         private System.Windows.Forms.ToolStripMenuItem menu_extract;
         private System.Windows.Forms.ToolStripMenuItem menu_extract_all;
         private System.Windows.Forms.ToolStripMenuItem menu_lang;
+        private System.Windows.Forms.ToolStripMenuItem menu_packformat;
+        private System.Windows.Forms.ToolStripMenuItem menu_packformat_rho5;
+        private System.Windows.Forms.ToolStripMenuItem menu_packformat_lpk;
         private System.Windows.Forms.ToolStripMenuItem menu_extract_current;
         private System.Windows.Forms.ContextMenuStrip contextMenu_list;
         private System.Windows.Forms.ToolStripMenuItem filemenu_extractfile;

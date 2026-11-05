@@ -8,10 +8,11 @@ using System.Xml.Linq;
 using KartLibrary.Consts;
 using KartLibrary.Data;
 using KartLibrary.File;
+using KartLibrary.File.Lpk;
 using KartLibrary.IO;
 using KartLibrary.Xml;
 
-namespace RhoLoader;
+namespace KartRider;
 
 internal static class RhoPacker
 {
@@ -21,11 +22,19 @@ internal static class RhoPacker
         "pet", "sound", "stage", "stuff", "stuff2", "theme", "track", "trackThumb", "track_", "zeta", "zeta_"
     };
 
-    public static void PackTool(string[] args, CountryCode CC)
+    /// <summary>
+    /// 命令行封包 / 解包入口。
+    /// </summary>
+    /// <param name="packFormat">
+    /// 数据包（DataPack 目录）的封包格式，取 "rho5"（默认）或 "lpk"（来自 Setting.json 的 PackFormat）。
+    /// 只影响 rho5 那条路径；rho 封包不受影响，始终生成 .rho。
+    /// </param>
+    public static void PackTool(string[] args, CountryCode CC, string packFormat = "rho5")
     {
+        bool useLpk = IsLpkFormat(packFormat);
         foreach (var arg in args)
         {
-            if (arg.EndsWith(".rho") || arg.EndsWith(".rho5"))
+            if (arg.EndsWith(".rho") || arg.EndsWith(".rho5") || arg.EndsWith(".lpk"))
             {
                 decode(arg, CC);
             }
@@ -52,7 +61,7 @@ internal static class RhoPacker
                 var temp = Directory.GetDirectories(arg);
                 if (temp.All(dir => datapack.Contains(Path.GetFileName(dir))) && temp.Length != 0)
                 {
-                    encode(arg, CC);
+                    encode(arg, CC, useLpk);
                 }
                 else
                 {
@@ -63,14 +72,15 @@ internal static class RhoPacker
                     }
                     else
                     {
-                        encodea(arg);
+                        encodeRho(arg);
                     }
                 }
             }
         }
     }
 
-    private static void encodea(string input)
+    // rho 封包不受 PackFormat 影响：这条路径只封 rho 文件。
+    private static void encodeRho(string input)
     {
         string output = input;
         if (!output.EndsWith(".rho"))
@@ -85,6 +95,77 @@ internal static class RhoPacker
         GetAllFiles(targetPath, rhoArchive.RootFolder);
 
         rhoArchive.SaveTo(output);
+    }
+
+    /// <summary>
+    /// 把目录封成 LPK v4 分包。包内路径为相对该目录的路径（保留 kart_ / zeta / ... 等顶层目录），
+    /// 与 <see cref="LpkFolderManager"/> 读取 Data 目录时建立的目录树一致。
+    /// 输出文件名沿用 rho5 的规则：<c>&lt;输入目录&gt;.lpk</c>。
+    /// </summary>
+    private static void encodeLpk(string input)
+    {
+        string output = input.EndsWith(".lpk", StringComparison.OrdinalIgnoreCase) ? input : input + ".lpk";
+        string root = Path.GetFullPath(input)
+            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        if (!Directory.Exists(root))
+        {
+            Console.WriteLine($"路径不存在：{input}");
+            return;
+        }
+
+        var entries = new List<LpkV4.LpkEntry>();
+        CollectLpkEntries(root, root, entries);
+        if (entries.Count == 0)
+        {
+            Console.WriteLine($"目录中没有可封包的文件：{input}");
+            return;
+        }
+
+        // 目标包已存在时沿用原包的头部信息、记录顺序与未改动文件的密文，
+        // 这样“解包 → 修改 → 重封包”只改动变化的文件，其余部分与原包逐字节一致。
+        LpkMetadata? metadata = null;
+        if (File.Exists(output))
+        {
+            try
+            {
+                metadata = LpkV4.ReadMetadata(output);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"读取原分包失败，将重新封包：{ex.Message}");
+                metadata = null;
+            }
+        }
+
+        LpkV4.Encode(output, entries, metadata);
+        Console.WriteLine($"已生成 LPK 分包：{output}（{entries.Count} 个文件）");
+    }
+
+    private static void CollectLpkEntries(string root, string current, List<LpkV4.LpkEntry> entries)
+    {
+        DirectoryInfo dirInfo = new DirectoryInfo(current);
+
+        List<FileInfo> files = new List<FileInfo>(dirInfo.GetFiles());
+        files.Sort(new CustomStringComparerFile());
+        foreach (FileInfo file in files)
+        {
+            string relativePath = Path.GetRelativePath(root, file.FullName).Replace('\\', '/');
+            entries.Add(new LpkV4.LpkEntry
+            {
+                Path = relativePath,
+                SourcePath = file.FullName
+            });
+        }
+
+        List<DirectoryInfo> subdirs = new List<DirectoryInfo>(dirInfo.GetDirectories());
+        subdirs.Sort(new CustomStringComparerDir());
+        foreach (DirectoryInfo subdir in subdirs)
+            CollectLpkEntries(root, subdir.FullName, entries);
+    }
+
+    private static bool IsLpkFormat(string packFormat)
+    {
+        return string.Equals(packFormat, "lpk", StringComparison.OrdinalIgnoreCase);
     }
 
     private static void GetAllFiles(string folderPath, RhoFolder folder)
@@ -118,8 +199,14 @@ internal static class RhoPacker
         }
     }
 
-    private static void encode(string input, CountryCode CC)
+    private static void encode(string input, CountryCode CC, bool useLpk)
     {
+        if (useLpk)
+        {
+            encodeLpk(input);
+            return;
+        }
+
         string output = input;
         var rho5Archive = new Rho5Archive();
         if (!output.EndsWith(".rho5"))
@@ -153,7 +240,11 @@ internal static class RhoPacker
             output = output.Replace(".rho", "");
         if (output.EndsWith(".rho5"))
             output = output.Replace(".rho5", "");
-        PackFolderManager packFolderManager = new PackFolderManager();
+        if (output.EndsWith(".lpk"))
+            output = output.Replace(".lpk", "");
+        IPackFolderManager packFolderManager = input.EndsWith(".lpk", StringComparison.OrdinalIgnoreCase)
+            ? new LpkFolderManager()
+            : new PackFolderManager();
         packFolderManager.OpenSingleFile(input, CC);
         PackFolderInfo rootFolder = packFolderManager.GetRootFolder();
         
@@ -382,27 +473,18 @@ internal static class RhoPacker
 
     private static void AAAC(string input, string[] files)
     {
-        string[] whitelist =
+        string[] sub =
         {
-            "_I04_sn", "_I05_sn", "_R01_sn", "_R02_sn", "_I02_sn", "_I01_sn", "_I03_sn", "_L01_", "_L02_", "_L03_03_",
-            "_L03_", "_L04_", "bazzi_", "arthur_", "bero_", "brodi_", "camilla_", "chris_", "contender_", "crowdr_",
-            "CSO_", "dao_", "dizni_", "erini_", "ethi_", "Guazi_", "halloween_", "homrunDao_", "innerWearSonogong_",
-            "innerWearWonwon_", "Jianbing_", "kephi_", "kero_", "kwanwoo_", "Lingling_", "lodumani_", "mabi_", "Mahua_",
-            "marid_", "mobi_", "mos_", "narin_", "neoul_", "neo_", "nymph_", "olympos_", "panda_", "referee_", "ren_",
-            "Reto_", "run_", "zombie_", "santa_", "sophi_", "taki_", "tiera_", "tutu_", "twoTop_", "twotop_", "uni_",
-            "wonwon_", "zhindaru_", "zombie_", "flyingBook_", "flyingMechanic_", "flyingRedlight_", "crow_",
-            "dragonBoat_", "GiLin_", "maple_", "beach_", "village_", "china_", "factory_", "ice_", "mine_", "nemo_",
-            "world_", "forest_", "_I", "_R", "_S", "_F", "_P", "_K", "_D", "_jp", "_A0"
+            "boss", "character", "dialog", "dialog2", "effect", "etc_", "flyingPet", "gui", "item", "kart_", "myRoom",
+            "pet", "stage", "stuff", "stuff2", "theme", "track", "trackThumb", "track_",
+            "sound_bgm", "sound_character", "sound_flyingPet", "sound_fx", "sound_pet", "zeta_kr", "zeta_cn", "zeta_tw"
         };
-        string[] blacklist = { "character_" };
 
         var root = new XElement("PackFolder", new XAttribute("name", "KartRider"));
         foreach (var file in files)
         {
             var fileName = Path.GetFileName(file);
-            var result = fileName;
-            foreach (var white in whitelist) result = result.Replace(white, white.Replace("_", "!"));
-            foreach (var black in blacklist) result = result.Replace(black.Replace("_", "!"), black);
+            var result = Prefixes(fileName, sub);
             var splitParts = result.Split('_');
             var currentFolder = root;
             for (var i = 0; i < splitParts.Length - 1; i++)
@@ -412,8 +494,8 @@ internal static class RhoPacker
                     .FirstOrDefault(f => (string)f.Attribute("name") == folderName);
                 if (subFolder == null)
                 {
-                    if (folderName == "character" || folderName == "flyingPet" || folderName == "pet" ||
-                        folderName == "track")
+                    if ((folderName == "character" || folderName == "flyingPet" || folderName == "pet" ||
+                        folderName == "track") && splitParts[0] != "sound")
                         subFolder = new XElement("PackFolder", new XAttribute("name", folderName),
                             new XAttribute("loadPass", "1"));
                     else
@@ -442,6 +524,34 @@ internal static class RhoPacker
         }
 
         root.Save(input + "\\aaa.xml");
+    }
+
+    private static string Prefixes(string fileName, string[] prefixes)
+    {
+        // 1. 找出所有匹配的前缀，取最长（避免短前缀误匹配）
+        string matchedPrefix = prefixes
+            .Where(p => fileName.StartsWith(p))
+            .OrderByDescending(p => p.Length)
+            .FirstOrDefault();
+
+        // 2. 没有匹配则原样返回
+        if (matchedPrefix == null)
+            return fileName;
+
+        // 3. 取出前缀之后的部分
+        string rest = fileName.Substring(matchedPrefix.Length);
+
+        // 4. 如果剩余部分以 '_' 开头，保留这个 '_'，其余 '_' 替换为 '!'
+        if (rest.StartsWith("_"))
+        {
+            string afterFirstUnderscore = rest.Substring(1).Replace('_', '!');
+            return matchedPrefix + "_" + afterFirstUnderscore;
+        }
+        else
+        {
+            // 不以 '_' 开头，直接把剩余部分中的 '_' 替换为 '!'
+            return matchedPrefix + rest.Replace('_', '!');
+        }
     }
 
     private static int Wcscmp(string s1, string s2)
@@ -503,8 +613,8 @@ internal static class RhoPacker
             case ".xml":
                 return RhoFileProperty.Encrypted;
             case ".png":
-                return (fileSize <= 256) ? RhoFileProperty.Encrypted : RhoFileProperty.PartialEncrypted;
             case ".kap":
+                return (fileSize <= 256) ? RhoFileProperty.Encrypted : RhoFileProperty.PartialEncrypted;
             case ".ogg":
             case ".jpg":
             case ".flac":

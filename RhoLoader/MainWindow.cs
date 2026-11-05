@@ -13,6 +13,7 @@ using System.Resources;
 using KartLibrary.Xml;
 using KartLibrary.IO;
 using KartLibrary.File;
+using KartLibrary.File.Lpk;
 using KartLibrary.Consts;
 using RhoLoader.PreviewWindow;
 using RhoLoader.Setting;
@@ -27,7 +28,8 @@ namespace RhoLoader
     {
         private SettingLoader BaseSettingLoader = new SettingLoader();
 
-        private PackFolderManager BaseFolderManager = new PackFolderManager();
+        // rho/rho5 与 lpk 两种分包格式共用同一套目录树接口，打开时按格式自动切换实现。
+        private IPackFolderManager BaseFolderManager = new PackFolderManager();
 
         private PackFolderInfo _root_folder;
 
@@ -44,6 +46,7 @@ namespace RhoLoader
             AddLanguages();
             LoadSetting();
             LoadLang();
+            UpdatePackFormatMenu();
             listview_main.SmallImageList = imageList_listview;
             listview_main.SmallImageList.Images.Add("file", new Bitmap(global::RhoLoader.Resource.baseline_insert_drive_file_black_18dp));
             listview_main.SmallImageList.Images.Add("folder", new Bitmap(global::RhoLoader.Resource.folder_close));
@@ -73,6 +76,7 @@ namespace RhoLoader
             this.columnHeader3.Text = ((string)this.columnHeader3.Tag).GetStringBag();
             this.Text = ((string)this.Tag).GetStringBag();
             this.menu_lang.Text = ((string)this.menu_lang.Tag).GetStringBag();
+            this.menu_packformat.Text = ((string)this.menu_packformat.Tag).GetStringBag();
             this.filemenu_extract_selected.Text = ((string)this.filemenu_extract_selected.Tag).GetStringBag();
             this.filemenu_convertPNG.Text = ((string)this.filemenu_convertPNG.Tag).GetStringBag();
             this.filemenu_convertXML.Text = ((string)this.filemenu_convertXML.Tag).GetStringBag();
@@ -112,6 +116,7 @@ namespace RhoLoader
             this.menu_extract_current.Font = LanguageManager.GetLangFontWithBase(this.menu_extract_current.Font);
             this.filemenu_extractfile.Font = LanguageManager.GetLangFontWithBase(this.filemenu_extractfile.Font);
             this.menu_about.Font = LanguageManager.GetLangFontWithBase(this.menu_about.Font);
+            this.menu_packformat.Font = LanguageManager.GetLangFontWithBase(this.menu_packformat.Font);
             this.listview_main.Font = LanguageManager.GetLangFontWithBase(this.listview_main.Font);
             this.Text = ((string)this.Tag).GetStringBag();
             //this.menu_lang.Font = LanguageManager.GetLangFontWithBase(this.menu_lang.Font);
@@ -149,137 +154,135 @@ namespace RhoLoader
             if (region_str == "KR" || region_str == "CN" || region_str == "TW")
                 Program.CC = (CountryCode)Enum.Parse(typeof(CountryCode), region_str);
         }
+        /// <summary>
+        /// 切换封包格式（写入 Setting.json 的 PackFormat）：
+        /// rho5 生成 *.rho5 数据包，lpk 生成 *.lpk 分包（LPK v4 客户端）。
+        /// 该参数在命令行封包（RhoLoader.exe &lt;DataPack 目录&gt;）时生效。
+        /// </summary>
+        private void action_changePackFormat(object sender, EventArgs e)
+        {
+            string format = ReferenceEquals(sender, menu_packformat_lpk) ? "lpk" : "rho5";
+            if (BaseSettingLoader.Setting is null)
+                BaseSettingLoader.Setting = new RhoLoader.Setting.Setting();
+            BaseSettingLoader.Setting.PackFormat = format;
+            BaseSettingLoader.SaveSetting("Setting.json");
+            UpdatePackFormatMenu();
+        }
+        /// <summary>
+        /// 按当前设置刷新“封包格式”菜单的勾选状态。
+        /// </summary>
+        private void UpdatePackFormatMenu()
+        {
+            string format = BaseSettingLoader.Setting?.PackFormat ?? "rho5";
+            bool lpk = string.Equals(format, "lpk", StringComparison.OrdinalIgnoreCase);
+            menu_packformat_rho5.Checked = !lpk;
+            menu_packformat_lpk.Checked = lpk;
+        }
         private void action_openFolder(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.Description = "Please select Data folder including aaa.pk.";
-            if (fbd.ShowDialog() == DialogResult.OK)
+            fbd.Description = "Please select Data folder including aaa.pk or *.lpk.";
+            if (fbd.ShowDialog() != DialogResult.OK)
+                return;
+
+            string dataFolder = fbd.SelectedPath;
+            string aaaPkPath = Path.Combine(dataFolder, "aaa.pk");
+            // LPK 版客户端的 Data 目录由 *.lpk 分包组成，aaa.pk 已不可读，
+            // 因此先看是否存在 .lpk 分包，没有才退回 aaa.pk + rho/rho5 的旧流程。
+            bool lpkMode = HasLpkPackages(dataFolder);
+            if (!lpkMode && !File.Exists(aaaPkPath))
             {
-                if (!File.Exists($"{fbd.SelectedPath}\\aaa.pk"))
-                    MessageBox.Show("aaa.pk cannot found in the folder.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("aaa.pk or *.lpk cannot found in the folder.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            CloseCurrentFile();
+            try
+            {
+                if (lpkMode)
+                {
+                    BaseFolderManager = new LpkFolderManager();
+                    BaseFolderManager.OpenDataFolder(dataFolder);
+                }
                 else
                 {
-                    CloseCurrentFile();
-                    BaseFolderManager.OpenDataFolder($"{fbd.SelectedPath}\\aaa.pk");
-                    Queue<PackFolderInfo> folderQueue = new Queue<PackFolderInfo>();
-                    Queue<TreeNode> nodeQueue = new Queue<TreeNode>();
-                    PackFolderInfo[] rootFolders = BaseFolderManager.GetDirectories("");
-                    foreach (PackFolderInfo folder in rootFolders)
-                    {
-                        folderQueue.Enqueue(folder);
-                        TreeNode rootNode = new TreeNode()
-                        {
-                            Text = folder.FolderName,
-                            Tag = new NodeInfoContainer(NodeType.Folder, folder)
-                        };
-                        nodeQueue.Enqueue(rootNode);
-                        treeview_explorer.Nodes.Add(rootNode);
-                    }
-                    while (folderQueue.Count > 0 && nodeQueue.Count > 0)
-                    {
-                        TreeNode node = nodeQueue.Dequeue();
-                        PackFolderInfo packFolderInfo = folderQueue.Dequeue();
-                        foreach (PackFolderInfo folder in packFolderInfo.GetFoldersInfo())
-                        {
-                            TreeNode subnode = new TreeNode()
-                            {
-                                Text = folder.FolderName,
-                                Tag = new NodeInfoContainer(NodeType.Folder, folder)
-                            };
-                            node.Nodes.Add(subnode);
-                            folderQueue.Enqueue(folder);
-                            nodeQueue.Enqueue(subnode);
-                        }
-                    }
-                    _cur_folder = _root_folder = BaseFolderManager.GetRootFolder();
-                    //PathStack.Push("");
-                    UpdateUIFolder();
+                    BaseFolderManager = new PackFolderManager();
+                    BaseFolderManager.OpenDataFolder(aaaPkPath);
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            BuildExplorerTree();
+            _cur_folder = _root_folder = BaseFolderManager.GetRootFolder();
+            UpdateUIFolder();
         }
         private void action_open(object sender, EventArgs e)
         {
             dialog_multiFile.InitialDirectory = dialog_singleFile.InitialDirectory;
-            if (dialog_singleFile.ShowDialog() == DialogResult.OK)
+            if (dialog_singleFile.ShowDialog() != DialogResult.OK)
+                return;
+
+            string fileName = dialog_singleFile.FileName;
+            CloseCurrentFile();
+            try
             {
-                CloseCurrentFile();
-                BaseFolderManager.OpenSingleFile(dialog_singleFile.FileName, Program.CC);
-                Queue<PackFolderInfo> folderQueue = new Queue<PackFolderInfo>();
-                Queue<TreeNode> nodeQueue = new Queue<TreeNode>();
-                PackFolderInfo[] rootFolders = BaseFolderManager.GetDirectories("");
-                foreach (PackFolderInfo folder in rootFolders)
-                {
-                    folderQueue.Enqueue(folder);
-                    TreeNode rootNode = new TreeNode()
-                    {
-                        Text = folder.FolderName,
-                        Tag = new NodeInfoContainer(NodeType.Folder, folder)
-                    };
-                    nodeQueue.Enqueue(rootNode);
-                    treeview_explorer.Nodes.Add(rootNode);
-                }
-                while (folderQueue.Count > 0 && nodeQueue.Count > 0)
-                {
-                    TreeNode node = nodeQueue.Dequeue();
-                    PackFolderInfo packFolderInfo = folderQueue.Dequeue();
-                    foreach (PackFolderInfo folder in packFolderInfo.GetFoldersInfo())
-                    {
-                        TreeNode subnode = new TreeNode()
-                        {
-                            Text = folder.FolderName,
-                            Tag = new NodeInfoContainer(NodeType.Folder, folder)
-                        };
-                        node.Nodes.Add(subnode);
-                        folderQueue.Enqueue(folder);
-                        nodeQueue.Enqueue(subnode);
-                    }
-                }
-                _cur_folder = _root_folder = rootFolders[0];
-                //PathStack.Push(rootFolders[0].FullName);
-                UpdateUIFolder();
+                // .lpk 走 LPK 分包管理器，其余（.rho/.rho5/.nho）仍走原有实现。
+                IPackFolderManager manager = IsLpkFile(fileName) ? new LpkFolderManager() : new PackFolderManager();
+                manager.OpenSingleFile(fileName, Program.CC);
+                BaseFolderManager = manager;
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            PackFolderInfo[] rootFolders = BuildExplorerTree();
+            _cur_folder = _root_folder = rootFolders.Length > 0 ? rootFolders[0] : BaseFolderManager.GetRootFolder();
+            //PathStack.Push(rootFolders[0].FullName);
+            UpdateUIFolder();
         }
         private void action_open_files(object sender, EventArgs e)
         {
             dialog_singleFile.InitialDirectory = dialog_multiFile.InitialDirectory;
-            if (dialog_multiFile.ShowDialog() == DialogResult.OK)
+            if (dialog_multiFile.ShowDialog() != DialogResult.OK)
+                return;
+
+            string[] files = dialog_multiFile.FileNames;
+            CloseCurrentFile();
+            try
             {
-                CloseCurrentFile();
-                BaseFolderManager.OpenMultipleFiles(Program.CC, dialog_multiFile.FileNames);
-                Queue<PackFolderInfo> folderQueue = new Queue<PackFolderInfo>();
-                Queue<TreeNode> nodeQueue = new Queue<TreeNode>();
-                PackFolderInfo[] rootFolders = BaseFolderManager.GetDirectories("");
-                foreach (PackFolderInfo folder in rootFolders)
+                bool lpkMode = files.Length > 0 && files.All(IsLpkFile);
+                IPackFolderManager manager;
+                string[] targets;
+                if (lpkMode)
                 {
-                    folderQueue.Enqueue(folder);
-                    TreeNode rootNode = new TreeNode()
-                    {
-                        Text = folder.FolderName,
-                        Tag = new NodeInfoContainer(NodeType.Folder, folder)
-                    };
-                    nodeQueue.Enqueue(rootNode);
-                    treeview_explorer.Nodes.Add(rootNode);
+                    manager = new LpkFolderManager();
+                    targets = files;
                 }
-                while (folderQueue.Count > 0 && nodeQueue.Count > 0)
+                else
                 {
-                    TreeNode node = nodeQueue.Dequeue();
-                    PackFolderInfo packFolderInfo = folderQueue.Dequeue();
-                    foreach (PackFolderInfo folder in packFolderInfo.GetFoldersInfo())
-                    {
-                        TreeNode subnode = new TreeNode()
-                        {
-                            Text = folder.FolderName,
-                            Tag = new NodeInfoContainer(NodeType.Folder, folder)
-                        };
-                        node.Nodes.Add(subnode);
-                        folderQueue.Enqueue(folder);
-                        nodeQueue.Enqueue(subnode);
-                    }
+                    // 混选时 rho/rho5 走原实现，.lpk 交给 LPK 管理器单独打开。
+                    manager = new PackFolderManager();
+                    targets = files.Where(x => !IsLpkFile(x)).ToArray();
                 }
-                _cur_folder = _root_folder = BaseFolderManager.GetRootFolder();
-                //PathStack.Push(rootFolders[0].FullName);
-                UpdateUIFolder();
+                manager.OpenMultipleFiles(Program.CC, targets);
+                BaseFolderManager = manager;
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            BuildExplorerTree();
+            _cur_folder = _root_folder = BaseFolderManager.GetRootFolder();
+            //PathStack.Push(rootFolders[0].FullName);
+            UpdateUIFolder();
         }
         private void action_aboutWindow(object sender, EventArgs e)
         {
@@ -653,6 +656,63 @@ namespace RhoLoader
             else
                 this.icon_back.Enabled = false;
         }
+        /// <summary>
+        /// 依据当前分包管理器的根目录重建左侧目录树，返回根一级的目录列表。
+        /// </summary>
+        private PackFolderInfo[] BuildExplorerTree()
+        {
+            treeview_explorer.Nodes.Clear();
+            Queue<PackFolderInfo> folderQueue = new Queue<PackFolderInfo>();
+            Queue<TreeNode> nodeQueue = new Queue<TreeNode>();
+            PackFolderInfo[] rootFolders = BaseFolderManager.GetDirectories("") ?? Array.Empty<PackFolderInfo>();
+            foreach (PackFolderInfo folder in rootFolders)
+            {
+                folderQueue.Enqueue(folder);
+                TreeNode rootNode = new TreeNode()
+                {
+                    Text = folder.FolderName,
+                    Tag = new NodeInfoContainer(NodeType.Folder, folder)
+                };
+                nodeQueue.Enqueue(rootNode);
+                treeview_explorer.Nodes.Add(rootNode);
+            }
+            while (folderQueue.Count > 0 && nodeQueue.Count > 0)
+            {
+                TreeNode node = nodeQueue.Dequeue();
+                PackFolderInfo packFolderInfo = folderQueue.Dequeue();
+                foreach (PackFolderInfo folder in packFolderInfo.GetFoldersInfo())
+                {
+                    TreeNode subnode = new TreeNode()
+                    {
+                        Text = folder.FolderName,
+                        Tag = new NodeInfoContainer(NodeType.Folder, folder)
+                    };
+                    node.Nodes.Add(subnode);
+                    folderQueue.Enqueue(folder);
+                    nodeQueue.Enqueue(subnode);
+                }
+            }
+            return rootFolders;
+        }
+
+        private static bool IsLpkFile(string fileName)
+        {
+            return fileName.EndsWith(".lpk", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool HasLpkPackages(string folder)
+        {
+            try
+            {
+                return Directory.Exists(folder)
+                    && Directory.GetFiles(folder, "*.lpk", SearchOption.TopDirectoryOnly).Length > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private void CloseCurrentFile()
         {
             /*

@@ -18,6 +18,7 @@ using KartLibrary.Game.Engine.Tontrollers;
 using KartLibrary.Game.Engine.Relements;
 using KartLibrary.Game.Engine.Properities;
 using KartLibrary.Game.Engine.Render;
+using KartRider;
 using KartLibrary.File;
 using KartLibrary.Consts;
 using KartLibrary.Xml;
@@ -63,7 +64,8 @@ namespace RhoLoader
             if (args != null && args.Length > 0)
             {
                 AllocConsole();
-                RhoPacker.PackTool(args, CC);
+                // 封包格式由 Setting.json 的 PackFormat 决定（rho5 / lpk）。
+                RhoPacker.PackTool(args, CC, Language.Setting.PackFormat);
             }
             else
             {

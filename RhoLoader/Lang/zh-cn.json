@@ -41,6 +41,10 @@
       "Value": "语言"
     },
     {
+      "Name": "menu_packformat",
+      "Value": "封包格式"
+    },
+    {
       "Name": "menu_about",
       "Value": "关于"
     },

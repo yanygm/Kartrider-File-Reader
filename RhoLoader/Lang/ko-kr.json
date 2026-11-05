@@ -41,6 +41,10 @@
       "Value": "언어"
     },
     {
+      "Name": "menu_packformat",
+      "Value": "패키지 형식"
+    },
+    {
       "Name": "menu_about",
       "Value": "소개"
     },
